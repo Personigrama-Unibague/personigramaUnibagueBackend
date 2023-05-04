@@ -1,4 +1,4 @@
-package unibague.personigramaunibaguebackend.model.Unidades;
+package unibague.personigramaunibaguebackend.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,25 +1,26 @@
 package unibague.personigramaunibaguebackend.services;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import unibague.personigramaunibaguebackend.model.Personal;
 import unibague.personigramaunibaguebackend.model.Unidad;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 @Service
-public class UnidadesService {
+public class PersonalService {
 
-    public List<Unidad> getUnidades() {
-        List<Unidad> unidades = null;
+    public List<Personal> getPersonas() {
+        List<Personal> personas = null;
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-             unidades = objectMapper.readValue(new File("./src/main/resources/static/unidades.json"), new TypeReference<List<Unidad>>() {
+            personas = objectMapper.readValue(new File("./src/main/resources/static/personal.json"), new TypeReference<List<Personal>>() {
             });
         } catch (JsonMappingException e) {
             e.printStackTrace();
@@ -28,7 +29,7 @@ public class UnidadesService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return unidades;
+        return personas;
     }
 
 }
