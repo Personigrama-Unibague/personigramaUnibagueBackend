@@ -44,15 +44,7 @@ public class PersonalService {
 
             for(int i = 0; i < personas.size(); i++){
                 if(personas.get(i).getUnidad().equals(id)){
-                    persona.setNombre(personas.get(i).getNombre());
-                    persona.setCargo(personas.get(i).getCargo());
-                    persona.setCorreo(personas.get(i).getCorreo());
-                    persona.setTelefono(personas.get(i).getTelefono());
-                    persona.setExtension(personas.get(i).getExtension());
-                    persona.setFoto(personas.get(i).getFoto());
-                    persona.setUnidad(personas.get(i).getUnidad());
-
-                    personasByUnidad.add(persona);
+                    personasByUnidad.add(personas.get(i));
                 }
             }
             return personasByUnidad;
