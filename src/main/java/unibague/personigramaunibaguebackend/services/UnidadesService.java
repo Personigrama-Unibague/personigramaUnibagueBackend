@@ -31,4 +31,28 @@ public class UnidadesService {
         return unidades;
     }
 
+    public String getUnidadNameById(String id){
+        List<Unidad> unidades = null;
+        String unidadName = null;
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            unidades = objectMapper.readValue(new File("./src/main/resources/static/unidades.json"), new TypeReference<List<Unidad>>() {
+            });
+
+            for(int i = 0; i < unidades.size(); i++){
+                if(unidades.get(i).getId().equals(id)){
+                    unidadName = unidades.get(i).getNombre();
+                    System.out.println(unidadName);
+                }
+            }
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (JsonGenerationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return unidadName;
+    }
+
 }
