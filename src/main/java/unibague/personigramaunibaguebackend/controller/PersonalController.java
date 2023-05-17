@@ -26,4 +26,9 @@ public class PersonalController {
     public List<Personal> getPersonal(@PathVariable String id) throws Exception{
         return personalService.getPersonasByUnidad(id);
     }
+
+    @PostMapping("/getAgregarPersona")
+    public void getAgregarPersona(@RequestBody  Personal persona) throws Exception{
+        personalService.getAgregarPersona(persona);
+    }
 }

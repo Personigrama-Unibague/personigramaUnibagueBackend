@@ -42,7 +42,6 @@ public class UnidadesService {
             for(int i = 0; i < unidades.size(); i++){
                 if(unidades.get(i).getId().equals(id)){
                     unidadName = unidades.get(i).getNombre();
-                    System.out.println(unidadName);
                 }
             }
         } catch (JsonMappingException e) {
