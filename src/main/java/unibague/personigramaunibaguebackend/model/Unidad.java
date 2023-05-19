@@ -1,14 +1,19 @@
 package unibague.personigramaunibaguebackend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
+@Entity
+@Table(name="unidades")
 public class Unidad {
 
+    @Id
     @Getter @Setter private String id;
 
     @Getter @Setter private String nombre;

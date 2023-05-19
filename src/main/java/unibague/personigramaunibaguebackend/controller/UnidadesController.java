@@ -25,4 +25,9 @@ public class UnidadesController {
         return unidadesService.getUnidadNameById(id);
     }
 
+    @GetMapping("/guardarJson")
+    public void guardarJson() throws Exception{
+        unidadesService.guardarJson();
+    }
+
 }

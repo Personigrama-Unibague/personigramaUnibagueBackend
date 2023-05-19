@@ -1,13 +1,18 @@
 package unibague.personigramaunibaguebackend.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import javax.persistence.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
+@Entity
+@Table(name="personal")
 public class Personal {
+
+    @Id
+    @Getter @Setter private String cedula;
 
     @Getter @Setter private String nombre;
 
@@ -21,8 +26,5 @@ public class Personal {
 
     @Getter @Setter private String foto;
 
-    @Getter @Setter private String cedula;
-
     @Getter @Setter private String unidad;
-
 }

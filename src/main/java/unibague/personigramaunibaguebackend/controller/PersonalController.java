@@ -1,11 +1,10 @@
 package unibague.personigramaunibaguebackend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unibague.personigramaunibaguebackend.model.Personal;
-import unibague.personigramaunibaguebackend.model.Unidad;
 import unibague.personigramaunibaguebackend.services.PersonalService;
-import unibague.personigramaunibaguebackend.services.UnidadesService;
 
 import java.util.List;
 
@@ -22,13 +21,42 @@ public class PersonalController {
         return personalService.getPersonas();
     }
 
-    @GetMapping("/getPersonalByUnidad/{id}")
-    public List<Personal> getPersonal(@PathVariable String id) throws Exception{
-        return personalService.getPersonasByUnidad(id);
+    @GetMapping("/findPersonalByUnidad/{und}")
+    public List<Personal> findPersonalByUnidad(@PathVariable String und) throws Exception{
+        return personalService.getFindPersonalByUnidad(und);
     }
 
-    @PostMapping("/getAgregarPersona")
-    public void getAgregarPersona(@RequestBody  Personal persona) throws Exception{
-        personalService.getAgregarPersona(persona);
+    @PostMapping("/agregarPersona")
+    public ResponseEntity<String> agregarPersona(@RequestBody Personal personal) throws Exception{
+        try{
+            personalService.getAgregarPersona(personal);
+            return ResponseEntity.ok("Persona Agregada Correctamente");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: Usuario no agregado");
+        }
+
     }
+
+    @GetMapping("/findPersonaById/{id}")
+    public Personal findPersonaById(@PathVariable String id) throws Exception{
+        return personalService.getFindPersonaById(id);
+    }
+
+    @GetMapping("/deletePersonaById/{id}")
+    public ResponseEntity<String> deletePersonaById(@PathVariable String id) throws Exception{
+        try{
+            personalService.getDeletePersonaById(id);
+            return ResponseEntity.ok("Persona Eliminada Correctamente");
+        }catch(Exception e){
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: Usuario no eliminado");
+        }
+    }
+
+    @GetMapping("/guardarJson")
+    public void guardarJson() throws Exception{
+        personalService.guardarJson();
+    }
+
 }
