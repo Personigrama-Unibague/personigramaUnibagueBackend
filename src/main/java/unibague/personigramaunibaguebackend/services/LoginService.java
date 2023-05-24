@@ -17,12 +17,17 @@ import java.util.List;
 @Service
 public class LoginService {
 
+    /**
+     * Repositorio
+     */
     @Autowired
     private ILoginRepository iLoginRepository;
 
     /**
-     * Metodo para obtener todas las personas
-     * @return Lista de personas
+     * Metodo para el loggeo para la seccion de administracion
+     * @param user usuario
+     * @param password contraseña
+     * @return True or False
      */
     public Boolean loginAuthenticationService(String user, String password ) {
         try {
