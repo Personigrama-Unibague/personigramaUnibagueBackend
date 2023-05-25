@@ -16,10 +16,16 @@ public class PersonalController {
     @Autowired
     private PersonalService personalService;
 
+    @GetMapping("/getPersonasDistinct/{unidad}")
+    public List<Personal> getPersonasDistinct(@PathVariable String unidad) throws Exception{
+        return personalService.getPersonasDistinct(unidad);
+    }
+
     @GetMapping("/getPersonal")
     public List<Personal> getPersonal() throws Exception{
-        return personalService.getPersonas();
+        return personalService.getAllPersonas();
     }
+
 
     @GetMapping("/findPersonalByUnidad/{und}")
     public List<Personal> findPersonalByUnidad(@PathVariable String und) throws Exception{
@@ -43,10 +49,10 @@ public class PersonalController {
         return personalService.getFindPersonaById(id);
     }
 
-    @GetMapping("/deletePersonaById/{id}")
-    public ResponseEntity<String> deletePersonaById(@PathVariable String id) throws Exception{
+    @GetMapping("/deletePersonaById/{id}/{unidad}")
+    public ResponseEntity<String> deletePersonaById(@PathVariable String id, @PathVariable String unidad) throws Exception{
         try{
-            personalService.getDeletePersonaById(id);
+            personalService.getDeletePersonaById(id, unidad);
             return ResponseEntity.ok("Persona Eliminada Correctamente");
         }catch(Exception e){
             e.printStackTrace();

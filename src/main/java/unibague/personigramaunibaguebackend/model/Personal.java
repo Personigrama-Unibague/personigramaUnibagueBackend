@@ -12,6 +12,9 @@ import javax.persistence.*;
 public class Personal {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter @Setter private String id;
+
     @Getter @Setter private String cedula;
 
     @Getter @Setter private String nombre;
@@ -26,9 +29,7 @@ public class Personal {
 
     @Getter @Setter private String foto;
 
-    @ManyToOne
-    @JoinColumn(name = "unidad_id")
-    @Getter @Setter private Unidad unidad;
+    @Getter @Setter private String unidad;
 
     @Getter @Setter private Integer id_jerar;
 }
