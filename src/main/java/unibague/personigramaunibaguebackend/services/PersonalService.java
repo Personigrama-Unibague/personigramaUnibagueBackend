@@ -31,9 +31,6 @@ public class PersonalService {
     @Autowired
     private IUnidadesRepository iUnidadesRepository;
 
-    @Autowired
-    private IRolesRepository iRolesRepository;
-
     /**
      * Metodo para obtener todas las personas
      *
@@ -144,7 +141,6 @@ public class PersonalService {
                     persona.setFoto(json.get(i).getFoto());
                     persona.setUnidad(und);
                     persona.setId_jerar(0);
-
                     personal.add(persona);
                 }
             }
