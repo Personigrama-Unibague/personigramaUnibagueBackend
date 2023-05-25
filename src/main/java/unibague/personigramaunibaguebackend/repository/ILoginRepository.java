@@ -12,7 +12,4 @@ public interface ILoginRepository extends JpaRepository<Personal, Long> {
 
     @Query(value = "SELECT (COUNT(*) > 0) AS existe FROM login WHERE usuario=:user and contraseña=:password", nativeQuery = true)
    Boolean loginAuthentication(String user, String password);
-
-    //@Query(value = "select * from personal where cedula = :id", nativeQuery = true)
-
 }

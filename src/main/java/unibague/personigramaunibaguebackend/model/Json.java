@@ -9,11 +9,9 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name="personal")
-public class Personal {
+public class Json {
 
     @Id
-    @Getter @Setter private String cedula;
-
     @Getter @Setter private String nombre;
 
     @Getter @Setter private String cargo;
@@ -26,9 +24,7 @@ public class Personal {
 
     @Getter @Setter private String foto;
 
-    @ManyToOne
-    @JoinColumn(name = "unidad_id")
-    @Getter @Setter private Unidad unidad;
+    @Getter @Setter private String cedula;
 
-    @Getter @Setter private Integer id_jerar;
+    @Getter @Setter private String unidad;
 }

@@ -13,4 +13,7 @@ public interface IUnidadesRepository extends JpaRepository<Unidad, Long> {
 
     @Query(value = "select nombre from unidades where id = :id", nativeQuery = true)
     String getNameById(String id);
+
+    @Query(value = "select * from unidades where id = :id", nativeQuery = true)
+    Unidad getUndById(String id);
 }
