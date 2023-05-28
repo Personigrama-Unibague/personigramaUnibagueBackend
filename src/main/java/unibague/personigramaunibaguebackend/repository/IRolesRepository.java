@@ -18,11 +18,17 @@ public interface IRolesRepository extends JpaRepository<Roles, Long> {
     @Query(value = "INSERT INTO public.roles(id_jerar, nombre, unidad)VALUES(:id_jerar, :nombre, :unidad)", nativeQuery = true)
     void saveRol(Integer id_jerar, String nombre, String unidad);
 
+    @Transactional
     @Query(value = "select * from roles where unidad = :unidad", nativeQuery = true)
     List<Roles> getAllRolesByUnidad(String unidad);
 
+    @Transactional
+    @Modifying
+    @Query(value = "delete from roles where id = :id", nativeQuery = true)
+    void deleteRolById(Integer id);
 
-    //getAllPersonalByRolAndUnidad
-
-
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE roles SET nombre = :nombre WHERE id = :id", nativeQuery = true)
+    void updateNameById(Integer id, String nombre);
 }

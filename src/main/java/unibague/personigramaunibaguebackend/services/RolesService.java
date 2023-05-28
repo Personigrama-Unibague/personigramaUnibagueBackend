@@ -17,21 +17,37 @@ public class RolesService {
     @Autowired
     private IRolesRepository iRolesRepository;
 
-    public void getAgregarRol(Integer id_jerar, String nombre, String unidad ) {
+    public void getAgregarRol(Integer id_jerar, String nombre, String unidad) {
         try {
-             iRolesRepository.saveRol(id_jerar,nombre,unidad);
+            iRolesRepository.saveRol(id_jerar, nombre, unidad);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public List<Roles> getAllRolesByUnidad(String unidad ) {
+    public List<Roles> getAllRolesByUnidad(String unidad) {
         try {
             List<Roles> roles = iRolesRepository.getAllRolesByUnidad(unidad);
             return roles;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void getDeleteRolById(Integer id) {
+        try {
+            iRolesRepository.deleteRolById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getUpdateNameById(Integer id, String nombre) {
+        try {
+            iRolesRepository.updateNameById(id, nombre);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
