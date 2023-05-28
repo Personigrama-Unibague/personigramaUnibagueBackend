@@ -124,6 +124,21 @@ public class PersonalService {
         }
     }
 
+    public void getUpdateIdJerarByCedulaUnd(Integer id_jerar, String cedula, String unidad) {
+        try {
+            iPersonalRepository.updateIdJerarByCedulaUnd(id_jerar, cedula, unidad);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+
+
+
     /**
      * Metodo para guardar el json en la base de datos
      */

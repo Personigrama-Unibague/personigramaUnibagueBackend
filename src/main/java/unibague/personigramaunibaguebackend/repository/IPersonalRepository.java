@@ -49,6 +49,12 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
 
     @Transactional
     @Modifying
+    @Query(value = "update personal set id_jerar=:id_jerar where cedula=:cedula and unidad=:unidad", nativeQuery = true)
+    void updateIdJerarByCedulaUnd(Integer id_jerar, String cedula, String unidad);
+
+
+    @Transactional
+    @Modifying
     @Query(value = "INSERT INTO public.personal\n" +
             "(cedula, cargo, correo, \"extension\", foto, id_jerar, nombre, telefono, unidad_id)\n" +
             "VALUES(:cedula, :cargo, :correo, :extension, :foto, 0, :nombre, :telefono, :und );", nativeQuery = true)

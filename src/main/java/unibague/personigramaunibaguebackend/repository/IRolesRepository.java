@@ -31,4 +31,6 @@ public interface IRolesRepository extends JpaRepository<Roles, Long> {
     @Modifying
     @Query(value = "UPDATE roles SET nombre = :nombre WHERE id = :id", nativeQuery = true)
     void updateNameById(Integer id, String nombre);
+
+
 }

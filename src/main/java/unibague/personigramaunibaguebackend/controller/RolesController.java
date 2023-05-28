@@ -61,5 +61,4 @@ public class RolesController {
             return ResponseEntity.badRequest().body("Error: Nombre no actualizado");
         }
     }
-
 }

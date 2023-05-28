@@ -60,6 +60,17 @@ public class PersonalController {
         }
     }
 
+    @GetMapping("/updateIdJerarByCedulaUnd/{id}/{cedula}/{unidad}")
+    public ResponseEntity<String> getUpdateIdJerarByCedulaUnd(@PathVariable Integer id , @PathVariable String cedula , @PathVariable String unidad) throws Exception {
+        try {
+            personalService.getUpdateIdJerarByCedulaUnd(id, cedula, unidad);
+            return ResponseEntity.ok("Persona actualizada Correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: persona no actualizada");
+        }
+    }
+
     @GetMapping("/guardarJson")
     public void guardarJson() throws Exception{
         personalService.guardarJson();
