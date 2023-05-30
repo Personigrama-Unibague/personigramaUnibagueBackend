@@ -28,7 +28,7 @@ public class UnidadesService {
         List<Unidad> unidades = null;
 
         try {
-            unidades = iUnidadesRepository.findAll();
+            unidades = iUnidadesRepository.getAllUnidades();
         } catch (Exception e) {
             e.printStackTrace();
         }

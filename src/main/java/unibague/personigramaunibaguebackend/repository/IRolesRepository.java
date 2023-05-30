@@ -19,7 +19,7 @@ public interface IRolesRepository extends JpaRepository<Roles, Long> {
     void saveRol(Integer id_jerar, String nombre, String unidad);
 
     @Transactional
-    @Query(value = "select * from roles where unidad = :unidad", nativeQuery = true)
+    @Query(value = "select * from roles where unidad = :unidad or unidad='0'", nativeQuery = true)
     List<Roles> getAllRolesByUnidad(String unidad);
 
     @Transactional

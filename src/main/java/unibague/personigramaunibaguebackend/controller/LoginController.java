@@ -20,6 +20,7 @@ public class LoginController {
 
     /**
      * Metodo para el loggeo para la seccion de administracion
+     *
      * @param user     usuario
      * @param password contraseña
      * @return True or False
@@ -28,12 +29,24 @@ public class LoginController {
     @GetMapping("/loginAuthentication/{user}/{password}")
     public ResponseEntity<Boolean> getPersonal(@PathVariable String user, @PathVariable String password) throws Exception {
 
-        Boolean response = loginService.loginAuthenticationService(user, password);
+        Boolean response = loginService.getLoginAuthenticationService(user, password);
 
         if (response == true) {
             return ResponseEntity.ok(true);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
+        }
+    }
+
+    @GetMapping("/saveNewUser/{user}/{password}")
+    public ResponseEntity<String> getSaveNewUser(@PathVariable String user, @PathVariable String password) throws Exception {
+
+        try {
+            loginService.getSaveNewUser(user, password);
+            return ResponseEntity.ok("Persona Agregada Correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: persona no agregada");
         }
     }
 }
