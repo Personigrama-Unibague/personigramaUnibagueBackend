@@ -17,27 +17,27 @@ public class PersonalController {
     private PersonalService personalService;
 
     @GetMapping("/getPersonasDistinct/{unidad}")
-    public List<Personal> getPersonasDistinct(@PathVariable String unidad) throws Exception{
+    public List<Personal> getPersonasDistinct(@PathVariable String unidad) throws Exception {
         return personalService.getPersonasDistinct(unidad);
     }
 
     @GetMapping("/getPersonal")
-    public List<Personal> getPersonal() throws Exception{
+    public List<Personal> getPersonal() throws Exception {
         return personalService.getAllPersonas();
     }
 
 
     @GetMapping("/findPersonalByUnidad/{und}")
-    public List<Personal> findPersonalByUnidad(@PathVariable String und) throws Exception{
+    public List<Personal> findPersonalByUnidad(@PathVariable String und) throws Exception {
         return personalService.getFindPersonalByUnidad(und);
     }
 
     @PostMapping("/agregarPersona")
-    public ResponseEntity<String> agregarPersona(@RequestBody Personal personal) throws Exception{
-        try{
+    public ResponseEntity<String> agregarPersona(@RequestBody Personal personal) throws Exception {
+        try {
             personalService.getAgregarPersona(personal);
             return ResponseEntity.ok("Persona Agregada Correctamente");
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Error: Usuario no agregado");
         }
@@ -45,23 +45,23 @@ public class PersonalController {
     }
 
     @GetMapping("/findPersonaById/{id}")
-    public Personal findPersonaById(@PathVariable String id) throws Exception{
+    public Personal findPersonaById(@PathVariable String id) throws Exception {
         return personalService.getFindPersonaById(id);
     }
 
     @GetMapping("/deletePersonaById/{id}/{unidad}")
-    public ResponseEntity<String> deletePersonaById(@PathVariable String id, @PathVariable String unidad) throws Exception{
-        try{
+    public ResponseEntity<String> deletePersonaById(@PathVariable String id, @PathVariable String unidad) throws Exception {
+        try {
             personalService.getDeletePersonaById(id, unidad);
             return ResponseEntity.ok("Persona Eliminada Correctamente");
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Error: Usuario no eliminado");
         }
     }
 
     @GetMapping("/updateIdJerarByCedulaUnd/{id}/{cedula}/{unidad}")
-    public ResponseEntity<String> getUpdateIdJerarByCedulaUnd(@PathVariable Integer id , @PathVariable String cedula , @PathVariable String unidad) throws Exception {
+    public ResponseEntity<String> getUpdateIdJerarByCedulaUnd(@PathVariable Integer id, @PathVariable String cedula, @PathVariable String unidad) throws Exception {
         try {
             personalService.getUpdateIdJerarByCedulaUnd(id, cedula, unidad);
             return ResponseEntity.ok("Persona actualizada Correctamente");
@@ -71,8 +71,32 @@ public class PersonalController {
         }
     }
 
+    @GetMapping("/updateIdJerarByCedulaUnd/{cedula}/{unidad}")
+    public ResponseEntity<String> getUpdateIdJerarDefault(@PathVariable String cedula, @PathVariable String unidad) throws Exception {
+        try {
+            personalService.getUpdateIdJerarDefault(cedula, unidad);
+            return ResponseEntity.ok("Persona actualizada Correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: persona no actualizada");
+        }
+    }
+
+    @GetMapping("/updateIdJerarDefaultAllSection/{unidad}/{id_jerar}")
+    public ResponseEntity<String> getUpdateIdJerarDefaultAllSection(@PathVariable String unidad, @PathVariable Integer id_jerar) throws Exception {
+        try {
+            personalService.getUpdateIdJerarDefaultAllSection(unidad, id_jerar);
+            return ResponseEntity.ok("Persona actualizada Correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: persona no actualizada");
+        }
+    }
+
+
+    //----------------------------------------------------------------------------------------------------------
     @GetMapping("/guardarJson")
-    public void guardarJson() throws Exception{
+    public void guardarJson() throws Exception {
         personalService.guardarJson();
     }
 

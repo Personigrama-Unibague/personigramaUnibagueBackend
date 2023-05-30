@@ -132,11 +132,21 @@ public class PersonalService {
         }
     }
 
+    public void getUpdateIdJerarDefault(String cedula, String unidad) {
+        try {
+            iPersonalRepository.updateIdJerarDefault(cedula, unidad);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-
-
-
-
+    public void getUpdateIdJerarDefaultAllSection(String unidad, Integer id_jerar) {
+        try {
+            iPersonalRepository.updateIdJerarDefaultAllSection(unidad, id_jerar);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     /**
