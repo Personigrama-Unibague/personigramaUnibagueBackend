@@ -6,18 +6,29 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+//Modelo que mapea las unidades
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name="unidades")
+@Table(name = "unidades")
 public class Unidad {
 
+    //Id generado en base de datos
     @Id
-    @Getter @Setter private String id;
+    @Getter
+    @Setter
+    private String id;
 
-    @Getter @Setter private String nombre;
+    //Nombre de la unidad
+    @Getter
+    @Setter
+    private String nombre;
 
-    @Getter @Setter private String parent_id;
+    //Rol de la unidad
+    @Getter
+    @Setter
+    private String parent_id;
 
 }

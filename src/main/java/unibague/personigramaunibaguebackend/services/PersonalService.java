@@ -17,18 +17,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+//Servicio que contiene los metodos para administrar la seccion de personal de la universidad
+
 @Service
 public class PersonalService {
 
+    /**
+     * Repositorio
+     */
     @Autowired
     private IPersonalRepository iPersonalRepository;
 
+    /**
+     * Repositorio
+     */
     @Autowired
     private IUnidadesRepository iUnidadesRepository;
 
     /**
-     * Metodo para obtener todas las personas
+     * Controlador para traer las personas unicas de tipo distinct por unidad
      *
+     * @param unidad unidad seleccionada
      * @return Lista de personas
      */
     public List<Personal> getPersonasDistinct(String unidad) {
@@ -42,6 +51,11 @@ public class PersonalService {
         return personas;
     }
 
+    /**
+     * Controlador que trae el total de personal de la universidad
+     *
+     * @return Lista de personas
+     */
     public List<Personal> getAllPersonas() {
         List<Personal> personas = null;
         try {
@@ -124,6 +138,14 @@ public class PersonalService {
         }
     }
 
+    /**
+     * Controlador que actualiza el Id_jerar de una persona
+     *
+     * @param id_jerar id de la persona
+     * @param cedula   cedula de la persona
+     * @param unidad   unidad a la que pertenece
+     * @return Mensaje
+     */
     public void getUpdateIdJerarByCedulaUnd(Integer id_jerar, String cedula, String unidad) {
         try {
             iPersonalRepository.updateIdJerarByCedulaUnd(id_jerar, cedula, unidad);
@@ -132,6 +154,13 @@ public class PersonalService {
         }
     }
 
+    /**
+     * Controlador que actualiza una persona a su id_jerar a default
+     *
+     * @param cedula cedula de la persona
+     * @param unidad unidad a la que pertenece
+     * @return Mensaje
+     */
     public void getUpdateIdJerarDefault(String cedula, String unidad) {
         try {
             iPersonalRepository.updateIdJerarDefault(cedula, unidad);
@@ -140,6 +169,13 @@ public class PersonalService {
         }
     }
 
+    /**
+     * Metodo para actualizar el Id_jerar de todas las personas de una unidad
+     *
+     * @param unidad   unidad a la que pertenece
+     * @param id_jerar id_jerar a actualizar
+     * @return Mensaje
+     */
     public void getUpdateIdJerarDefaultAllSection(String unidad, Integer id_jerar) {
         try {
             iPersonalRepository.updateIdJerarDefaultAllSection(unidad, id_jerar);

@@ -10,23 +10,49 @@ import unibague.personigramaunibaguebackend.model.Roles;
 
 import java.util.List;
 
+//Interfaz que implementa JpaRepository y metodos query personalizados
+
 @Repository
 public interface IRolesRepository extends JpaRepository<Roles, Long> {
 
+    /**
+     * Query para guardar un nuevo rol
+     *
+     * @param id_jerar Nuevo id_jerarquico
+     * @param nombre   Nombre del rol
+     * @param unidad   Unidad a la que pertenece el rol
+     */
     @Transactional
     @Modifying
     @Query(value = "INSERT INTO public.roles(id_jerar, nombre, unidad)VALUES(:id_jerar, :nombre, :unidad)", nativeQuery = true)
     void saveRol(Integer id_jerar, String nombre, String unidad);
 
+    /**
+     * Query para traer todos los roles por unidad
+     *
+     * @param unidad unidad a buscar
+     * @return Lista de roles
+     */
     @Transactional
     @Query(value = "select * from roles where unidad = :unidad or unidad='0'", nativeQuery = true)
     List<Roles> getAllRolesByUnidad(String unidad);
 
+    /**
+     * Query para borrar rol por id
+     *
+     * @param id id del rol
+     */
     @Transactional
     @Modifying
     @Query(value = "delete from roles where id = :id", nativeQuery = true)
     void deleteRolById(Integer id);
 
+    /**
+     * Query para actualizar el nombre de un rol por id
+     *
+     * @param id     id del rol
+     * @param nombre nuevo nombre del rol
+     */
     @Transactional
     @Modifying
     @Query(value = "UPDATE roles SET nombre = :nombre WHERE id = :id", nativeQuery = true)

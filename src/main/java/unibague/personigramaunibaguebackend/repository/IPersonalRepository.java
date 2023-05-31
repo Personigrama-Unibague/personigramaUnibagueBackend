@@ -10,9 +10,17 @@ import unibague.personigramaunibaguebackend.model.Unidad;
 
 import java.util.List;
 
+//Interfaz que implementa JpaRepository y metodos query personalizados
+
 @Repository
 public interface IPersonalRepository extends JpaRepository<Personal, Long> {
 
+    /**
+     * Query que trae el personal de la universidad por unidad de forma distinct
+     *
+     * @param unidad unidad
+     * @return Lista de personas
+     */
     @Query(value = "select * \n" +
             "from(\n" +
             "\tSELECT DISTINCT on (cedula) *\n" +
@@ -26,20 +34,56 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
             "order by nombre asc;", nativeQuery = true)
     List<Personal> getAllDistinct(String unidad);
 
+    /**
+     * Query para encontrar personas por unidad
+     *
+     * @param und unidad
+     * @return Lista de personas
+     */
     @Query(value = "select * from personal where unidad = :und", nativeQuery = true)
     List<Personal> findByUnidad(String und);
 
+    /**
+     * Query para encontrar personas por cedula
+     *
+     * @param id cedula
+     * @return Persona
+     */
     @Query(value = "select * from personal where cedula=:id limit 1", nativeQuery = true)
     Personal findByCedula(String id);
 
+    /**
+     * Query para validar si la personas existe por cedula
+     *
+     * @param id cedula de la persona
+     * @return true or false
+     */
     @Query(value = "select (COUNT(*) > 0) AS existe from personal where cedula = :id", nativeQuery = true)
     Boolean existByCedula(String id);
 
+    /**
+     * Query para eliminar una persona por cedula
+     *
+     * @param id     id de la persona
+     * @param unidad unidad a la que pertenece la persona
+     */
     @Transactional
     @Modifying
     @Query(value = "delete from personal where cedula = :id and unidad = :unidad", nativeQuery = true)
     void deleteByCedula(String id, String unidad);
 
+    /**
+     * Query para guardar persona
+     *
+     * @param cedula    cedula de la persona
+     * @param cargo     cargo de la persona
+     * @param correo    correo de la persona
+     * @param extension extension de la persona
+     * @param foto      foto de la persona
+     * @param nombre    nombre de la persona
+     * @param telefono  telefono de la persona
+     * @param unidad    unidad de la persona
+     */
     @Transactional
     @Modifying
     @Query(value = "INSERT INTO personal\n" +
@@ -47,16 +91,35 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
             "VALUES(:nombre, :cargo, :cedula, :correo, :extension, :foto, :telefono, :unidad, 0);", nativeQuery = true)
     void savePerson(String cedula, String cargo, String correo, Integer extension, String foto, String nombre, String telefono, String unidad);
 
+    /**
+     * Query para actualizar el id_jerarquico de la persona por cedula y unidad
+     *
+     * @param id_jerar nuevo id_jerar
+     * @param cedula   cedula de la persona
+     * @param unidad   unidad de la persona
+     */
     @Transactional
     @Modifying
     @Query(value = "update personal set id_jerar=:id_jerar where cedula=:cedula and unidad=:unidad", nativeQuery = true)
     void updateIdJerarByCedulaUnd(Integer id_jerar, String cedula, String unidad);
 
+    /**
+     * Query para actualizar el id_jerarquico a default
+     *
+     * @param cedula cedula de la persona
+     * @param unidad unidad a la que pertenece
+     */
     @Transactional
     @Modifying
     @Query(value = "update personal set id_jerar=0 where cedula=:cedula and unidad=:unidad", nativeQuery = true)
     void updateIdJerarDefault(String cedula, String unidad);
 
+    /**
+     * Query para actualizar masivamente a todas las personas de la unidad el Id_jerar a default
+     *
+     * @param unidad   unidad a modificar
+     * @param id_jerar id_jerar a modificar
+     */
     @Transactional
     @Modifying
     @Query(value = "update personal set id_jerar=0 where unidad=:unidad and id_jerar=:id_jerar", nativeQuery = true)
@@ -64,6 +127,10 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
 
 
     //----------------------------------------------------------------------------------------------------------
+
+    /**
+     * Query para pasar informacion de Json a Base De Datos
+     */
     @Transactional
     @Modifying
     @Query(value = "INSERT INTO public.personal\n" +

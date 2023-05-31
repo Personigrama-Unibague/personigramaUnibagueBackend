@@ -10,16 +10,28 @@ import unibague.personigramaunibaguebackend.services.RolesService;
 
 import java.util.List;
 
+//Controlador que contiene los metodos para administrar los roles
+
 @RestController
 @RequestMapping(value = "/api/v1/roles")
 @CrossOrigin("*")
 public class RolesController {
 
+    //Servicio para administrar la seccion de roles
     @Autowired
     private RolesService rolesService;
 
+    /**
+     * Controlador para guardar roles
+     *
+     * @param id_jerar Id_jerar de los roles
+     * @param nombre   Nombre del rol
+     * @param unidad   Unidad a la que va a pertenecer el rol
+     * @return Mensaje
+     * @throws Exception
+     */
     @GetMapping("/saveRol/{id_jerar}/{nombre}/{unidad}")
-    public ResponseEntity<String> getSaveRol(@PathVariable Integer id_jerar, @PathVariable String nombre, @PathVariable String unidad) throws Exception {
+    public ResponseEntity<String> getAgregarRol(@PathVariable Integer id_jerar, @PathVariable String nombre, @PathVariable String unidad) throws Exception {
         try {
             rolesService.getAgregarRol(id_jerar, nombre, unidad);
             return ResponseEntity.ok("Rol Agregado Correctamente");
@@ -29,6 +41,13 @@ public class RolesController {
         }
     }
 
+    /**
+     * Controlador para traer los roles por unidad
+     *
+     * @param unidad unidad a la que pertenecen los roles
+     * @return Lista de roles
+     * @throws Exception
+     */
     @GetMapping("/getAllRolesByUnidad/{unidad}")
     public List<Roles> getAllRolesByUnidad(@PathVariable String unidad) throws Exception {
         List<Roles> roles = null;
@@ -40,6 +59,13 @@ public class RolesController {
         return roles;
     }
 
+    /**
+     * Controlador para borrar un rol por id
+     *
+     * @param id Id del rol
+     * @return Mensaje
+     * @throws Exception
+     */
     @GetMapping("/deleteRolById/{id}")
     public ResponseEntity<String> getDeleteRolById(@PathVariable Integer id) throws Exception {
         try {
@@ -51,8 +77,16 @@ public class RolesController {
         }
     }
 
+    /**
+     * Controlador para actualizar el nombre de un rol
+     *
+     * @param id     id del rol
+     * @param nombre nuevo nombre del rol
+     * @return Mensaje
+     * @throws Exception
+     */
     @GetMapping("/updateNameById/{id}/{nombre}")
-    public ResponseEntity<String> getUpdateNameById(@PathVariable Integer id , @PathVariable String nombre) throws Exception {
+    public ResponseEntity<String> getUpdateNameById(@PathVariable Integer id, @PathVariable String nombre) throws Exception {
         try {
             rolesService.getUpdateNameById(id, nombre);
             return ResponseEntity.ok("Nombre actualizado Correctamente");

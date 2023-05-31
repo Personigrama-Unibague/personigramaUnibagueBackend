@@ -4,32 +4,64 @@ import lombok.*;
 
 import javax.persistence.*;
 
+//Modelo que compone la estructura del personal de la universidad
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name="personal")
+@Table(name = "personal")
 public class Personal {
 
+    //Id generado en base de datos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter @Setter private String id;
+    @Getter
+    @Setter
+    private String id;
 
-    @Getter @Setter private String cedula;
+    //Cedula de la persona
+    @Getter
+    @Setter
+    private String cedula;
 
-    @Getter @Setter private String nombre;
+    //Nombre de la persona
+    @Getter
+    @Setter
+    private String nombre;
 
-    @Getter @Setter private String cargo;
+    //Cargo de la persona
+    @Getter
+    @Setter
+    private String cargo;
 
-    @Getter @Setter private String correo;
+    //Correo de la persona
+    @Getter
+    @Setter
+    private String correo;
 
-    @Getter @Setter private String telefono;
+    //Telefono de la persona
+    @Getter
+    @Setter
+    private String telefono;
 
-    @Getter @Setter private Integer extension;
+    //Extension de la persona
+    @Getter
+    @Setter
+    private Integer extension;
 
-    @Getter @Setter private String foto;
+    //Foto de la persona
+    @Getter
+    @Setter
+    private String foto;
 
-    @Getter @Setter private String unidad;
+    //Unidad a la que pertenece la persona
+    @Getter
+    @Setter
+    private String unidad;
 
-    @Getter @Setter private Integer id_jerar;
+    //Id del rol al que pertenece la persona
+    @Getter
+    @Setter
+    private Integer id_jerar;
 }
