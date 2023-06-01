@@ -66,10 +66,10 @@ public class RolesController {
      * @return Mensaje
      * @throws Exception
      */
-    @GetMapping("/deleteRolById/{id}")
-    public ResponseEntity<String> getDeleteRolById(@PathVariable Integer id) throws Exception {
+    @GetMapping("/deleteRolById/{id}/{unidad}")
+    public ResponseEntity<String> getDeleteRolById(@PathVariable Integer id, @PathVariable String unidad) throws Exception {
         try {
-            rolesService.getDeleteRolById(id);
+            rolesService.getDeleteRolById(id, unidad);
             return ResponseEntity.ok("Rol Eliminado Correctamente");
         } catch (Exception e) {
             e.printStackTrace();

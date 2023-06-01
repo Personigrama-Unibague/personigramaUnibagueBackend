@@ -58,5 +58,17 @@ public interface IRolesRepository extends JpaRepository<Roles, Long> {
     @Query(value = "UPDATE roles SET nombre = :nombre WHERE id = :id", nativeQuery = true)
     void updateNameById(Integer id, String nombre);
 
+    /**
+     * Query para actualizar los Id_jerar de manera consecutiva
+     * @param unidad Unidad a actualizar
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE roles SET id_jerar = new_id_jerar\n" +
+            "FROM (SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS new_id_jerar\n" +
+            "\tFROM roles where unidad = :unidad\n" +
+            ") AS sub WHERE roles.id = sub.id and unidad=:unidad", nativeQuery = true)
+    void updateConsecutiveIdJerar(String unidad);
+
 
 }

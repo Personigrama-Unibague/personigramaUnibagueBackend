@@ -55,9 +55,11 @@ public class RolesService {
      *
      * @param id Id del rol
      */
-    public void getDeleteRolById(Integer id) {
+    public void getDeleteRolById(Integer id, String unidad) {
         try {
             iRolesRepository.deleteRolById(id);
+            iRolesRepository.updateConsecutiveIdJerar(unidad);
+            System.out.println(unidad);
         } catch (Exception e) {
             e.printStackTrace();
         }
