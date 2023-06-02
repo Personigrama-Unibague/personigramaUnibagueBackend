@@ -31,9 +31,9 @@ public class RolesController {
      * @throws Exception
      */
     @GetMapping("/saveRol/{id_jerar}/{nombre}/{unidad}")
-    public ResponseEntity<String> getAgregarRol(@PathVariable Integer id_jerar, @PathVariable String nombre, @PathVariable String unidad) throws Exception {
+    public ResponseEntity<String> getSaveRol(@PathVariable Integer id_jerar, @PathVariable String nombre, @PathVariable String unidad) throws Exception {
         try {
-            rolesService.getAgregarRol(id_jerar, nombre, unidad);
+            rolesService.getSaveRol(id_jerar, nombre, unidad);
             return ResponseEntity.ok("Rol Agregado Correctamente");
         } catch (Exception e) {
             e.printStackTrace();

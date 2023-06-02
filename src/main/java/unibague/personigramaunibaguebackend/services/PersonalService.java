@@ -105,7 +105,7 @@ public class PersonalService {
      *
      * @param persona persona a agregar
      */
-    public void getAgregarPersona(Personal persona) {
+    public void getSavePerson(Personal persona) {
         try {
             Personal personal = new Personal();
 

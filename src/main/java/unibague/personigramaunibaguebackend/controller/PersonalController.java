@@ -1,11 +1,14 @@
 package unibague.personigramaunibaguebackend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unibague.personigramaunibaguebackend.model.Personal;
+import unibague.personigramaunibaguebackend.model.Unidad;
 import unibague.personigramaunibaguebackend.services.PersonalService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //Controlador que contiene los metodos para administrar la seccion de personal de la universidad
@@ -28,7 +31,13 @@ public class PersonalController {
      */
     @GetMapping("/getPersonasDistinct/{unidad}")
     public List<Personal> getPersonasDistinct(@PathVariable String unidad) throws Exception {
-        return personalService.getPersonasDistinct(unidad);
+        List<Personal> list = new ArrayList<>();
+        try {
+            list = personalService.getPersonasDistinct(unidad);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     /**
@@ -39,7 +48,13 @@ public class PersonalController {
      */
     @GetMapping("/getPersonal")
     public List<Personal> getAllPersonas() throws Exception {
-        return personalService.getAllPersonas();
+        List<Personal> list = new ArrayList<>();
+        try {
+            list = personalService.getAllPersonas();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     /**
@@ -50,8 +65,14 @@ public class PersonalController {
      * @throws Exception
      */
     @GetMapping("/findPersonalByUnidad/{und}")
-    public List<Personal> findPersonalByUnidad(@PathVariable String und) throws Exception {
-        return personalService.getFindPersonalByUnidad(und);
+    public List<Personal> getFindPersonalByUnidad(@PathVariable String und) throws Exception {
+        List<Personal> list = new ArrayList<>();
+        try {
+            list = personalService.getFindPersonalByUnidad(und);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     /**
@@ -61,16 +82,15 @@ public class PersonalController {
      * @return Mensaje
      * @throws Exception
      */
-    @PostMapping("/agregarPersona")
-    public ResponseEntity<String> agregarPersona(@RequestBody Personal personal) throws Exception {
+    @PostMapping("/savePersona")
+    public ResponseEntity<String> getSavePerson(@RequestBody Personal personal) throws Exception {
         try {
-            personalService.getAgregarPersona(personal);
+            personalService.getSavePerson(personal);
             return ResponseEntity.ok("Persona Agregada Correctamente");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Error: Usuario no agregado");
         }
-
     }
 
     /**
@@ -81,8 +101,14 @@ public class PersonalController {
      * @throws Exception
      */
     @GetMapping("/findPersonaById/{id}")
-    public Personal findPersonaById(@PathVariable String id) throws Exception {
-        return personalService.getFindPersonaById(id);
+    public Personal getFindPersonaById(@PathVariable String id) throws Exception {
+        Personal persona = new Personal();
+        try {
+            persona = personalService.getFindPersonaById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return persona;
     }
 
     /**
@@ -94,7 +120,7 @@ public class PersonalController {
      * @throws Exception
      */
     @GetMapping("/deletePersonaById/{id}/{unidad}")
-    public ResponseEntity<String> deletePersonaById(@PathVariable String id, @PathVariable String unidad) throws Exception {
+    public ResponseEntity<String> getDeletePersonaById(@PathVariable String id, @PathVariable String unidad) throws Exception {
         try {
             personalService.getDeletePersonaById(id, unidad);
             return ResponseEntity.ok("Persona Eliminada Correctamente");
@@ -107,9 +133,9 @@ public class PersonalController {
     /**
      * Controlador que actualiza el Id_jerar de una persona
      *
-     * @param id_jerar     id de la persona
-     * @param cedula cedula de la persona
-     * @param unidad unidad a la que pertenece
+     * @param id_jerar id de la persona
+     * @param cedula   cedula de la persona
+     * @param unidad   unidad a la que pertenece
      * @return Mensaje
      * @throws Exception
      */
@@ -167,14 +193,17 @@ public class PersonalController {
     /**
      * Metodo para pasar informacion de Json a Base De Datos
      *
+     * @return Respueta HTTP
      * @throws Exception
      */
-    @GetMapping("/guardarJson")
-    public void guardarJson() throws Exception {
+    @GetMapping("/saveJson")
+    public ResponseEntity<String> getSaveJson() throws Exception {
         try {
             personalService.guardarJson();
+            return ResponseEntity.ok("Json Cargado Correctamente");
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ocurrió un error");
         }
     }
 

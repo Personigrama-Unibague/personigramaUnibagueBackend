@@ -59,7 +59,7 @@ public class UnidadesService {
     /**
      * Metodo para pasar informacion de Json a Base De Datos
      */
-    public void guardarJson() {
+    public void getSaveJson() {
         List<Unidad> unidades = null;
         Personal unidad = new Personal();
         try {

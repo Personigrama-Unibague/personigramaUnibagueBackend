@@ -26,7 +26,7 @@ public class RolesService {
      * @param nombre   Nombre del rol
      * @param unidad   Unidad a la que va a pertenecer el rol
      */
-    public void getAgregarRol(Integer id_jerar, String nombre, String unidad) {
+    public void getSaveRol(Integer id_jerar, String nombre, String unidad) {
         try {
             iRolesRepository.saveRol(id_jerar, nombre, unidad);
         } catch (Exception e) {

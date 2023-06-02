@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unibague.personigramaunibaguebackend.model.Personal;
 import unibague.personigramaunibaguebackend.model.ResumeLogin;
+import unibague.personigramaunibaguebackend.model.Unidad;
 import unibague.personigramaunibaguebackend.services.LoginService;
 import unibague.personigramaunibaguebackend.services.PersonalService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //Controlador que contiene los metodos para administrar la seccion de usuarios
@@ -30,7 +32,13 @@ public class LoginController {
      */
     @GetMapping("/findAllUsers")
     public List<?> getFindAllUsers() throws Exception {
-        return loginService.getFindAllUsers();
+        List<?> list = new ArrayList<>();
+        try {
+            list = loginService.getFindAllUsers();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     /**
@@ -46,7 +54,7 @@ public class LoginController {
 
         Boolean response = loginService.getLoginAuthenticationService(user, password);
 
-        if (response == true) {
+        if (response) {
             return ResponseEntity.ok(true);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
@@ -81,6 +89,10 @@ public class LoginController {
      */
     @GetMapping("/deleteUser/{id}")
     public void getDeleteUser(@PathVariable Integer id) throws Exception {
-        loginService.getDeleteUser(id);
+        try {
+            loginService.getDeleteUser(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
