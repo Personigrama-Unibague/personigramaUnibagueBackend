@@ -79,5 +79,20 @@ public class RolesService {
         }
     }
 
+    /**
+     * Metodo para cambiar el id_jerar de un rol y actualizar el resto
+     *
+     * @param antiguo antiguo id_jerar del rol
+     * @param nuevo   nuevo id_jerar del rol
+     * @param unidad  unidad del rol
+     */
+    public void getUpdateIdJerarRol(String antiguo, String nuevo, String unidad) {
+        try {
+            iRolesRepository.updateIdJerarRol(antiguo, nuevo, unidad);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

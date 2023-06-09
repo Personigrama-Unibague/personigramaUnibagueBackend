@@ -95,4 +95,22 @@ public class RolesController {
             return ResponseEntity.badRequest().body("Error: Nombre no actualizado");
         }
     }
+
+    /**
+     * Controlador para cambiar el id_jerar de un rol y actualizar el resto
+     *
+     * @param antiguo antiguo id_jerar del rol
+     * @param nuevo   nuevo id_jerar del rol
+     * @param unidad  unidad del rol
+     */
+    @GetMapping("/updateIdJerarRol/{antiguo}/{nuevo}/{unidad}")
+    public ResponseEntity<String> getUpdateIdJerarRol(@PathVariable String antiguo, @PathVariable String nuevo, @PathVariable String unidad) throws Exception {
+        try {
+            rolesService.getUpdateIdJerarRol(antiguo, nuevo, unidad);
+            return ResponseEntity.ok("Rol actualizado correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: Rol no actualizado");
+        }
+    }
 }
