@@ -61,7 +61,6 @@ public class UnidadesService {
      */
     public void getSaveJson() {
         List<Unidad> unidades = null;
-        Personal unidad = new Personal();
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             unidades = objectMapper.readValue(new File("./src/main/resources/static/unidades.json"), new TypeReference<List<Unidad>>() {

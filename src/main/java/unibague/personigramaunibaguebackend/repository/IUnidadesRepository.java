@@ -22,7 +22,7 @@ public interface IUnidadesRepository extends JpaRepository<Unidad, Long> {
      */
     @Transactional
     @Modifying
-    @Query(value = "select * from unidades order by id asc", nativeQuery = true)
+    @Query(value = "select * from unidades_2 order by id asc", nativeQuery = true)
     List<Unidad> getAllUnidades();
 
     /**
