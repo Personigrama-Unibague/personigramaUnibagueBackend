@@ -59,7 +59,7 @@ public class RolesService {
         try {
             iRolesRepository.deleteRolById(id);
             iRolesRepository.updateConsecutiveIdJerar(unidad);
-            System.out.println(unidad);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -89,6 +89,10 @@ public class RolesService {
     public void getUpdateIdJerarRol(String antiguo, String nuevo, String unidad) {
         try {
             iRolesRepository.updateIdJerarRol(antiguo, nuevo, unidad);
+            System.out.println("------------- pruebas --------------------");
+            System.out.println(antiguo);
+            System.out.println(nuevo);
+            System.out.println(unidad);
         } catch (Exception e) {
             e.printStackTrace();
         }
