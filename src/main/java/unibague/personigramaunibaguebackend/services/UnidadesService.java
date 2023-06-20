@@ -35,6 +35,7 @@ public class UnidadesService {
 
         try {
             unidades = iUnidadesRepository.getAllUnidades();
+            System.out.println(unidades);
         } catch (Exception e) {
             e.printStackTrace();
         }

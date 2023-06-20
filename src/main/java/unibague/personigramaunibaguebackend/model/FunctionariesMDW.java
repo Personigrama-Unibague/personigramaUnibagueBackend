@@ -35,6 +35,9 @@ public class FunctionariesMDW {
     //Id generado en base de datos
     private String program;
 
+    //Codigo de la unidad al que pertenece
+    private String dep_code;
+
     //Id generado en base de datos
     private String sede;
 
@@ -50,6 +53,12 @@ public class FunctionariesMDW {
 
     //Id generado en base de datos
     private String birth_date;
+
+    //Extension
+    private String extension;
+
+    //Cargo
+    private String position;
 
 
 }

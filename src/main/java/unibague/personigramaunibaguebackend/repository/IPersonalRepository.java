@@ -16,6 +16,13 @@ import java.util.List;
 public interface IPersonalRepository extends JpaRepository<Personal, Long> {
 
     /**
+     * Query que trae el personal de la universidad
+     * @return Lista de personas
+     */
+    @Query(value = "select * from personal", nativeQuery = true)
+    List<Personal> getAllPersonal();
+
+    /**
      * Query que trae el personal de la universidad por unidad de forma distinct
      *
      * @param unidad unidad

@@ -10,7 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "personal_2")
+@Table(name = "personal")
 public class Personal {
 
     //Id generado en base de datos

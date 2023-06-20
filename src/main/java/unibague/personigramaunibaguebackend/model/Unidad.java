@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "unidades_2")
+@Table(name = "unidades")
 public class Unidad {
 
     //Id generado en base de datos

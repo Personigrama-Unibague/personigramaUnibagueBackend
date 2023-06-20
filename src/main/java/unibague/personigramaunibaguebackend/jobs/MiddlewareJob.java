@@ -30,7 +30,7 @@ public class MiddlewareJob {
 
     private String token = "$2y$10$s/5xSDieUMEvYD/gfNqFAeFzvWXt13jhWuugpJzQ9rZQrbGpBYUxi";
 
-    @Scheduled(fixedRate = 15000)
+    //@Scheduled(fixedRate = 2000000)
     public void updateDependenciesMDW() {
 
         String urlUndMDW = "http://integra.unibague.edu.co/functionariesChart/dependencies?api_token=";
@@ -69,7 +69,7 @@ public class MiddlewareJob {
         System.out.println("Ejecutado");
     }
 
-    @Scheduled(fixedRate = 2000000)
+    //@Scheduled(fixedRate = 10000)
     public void updateFunctionariesMDW() {
 
         String urlPerMDW = "http://integra.unibague.edu.co/functionariesChart/functionaries?api_token=";
@@ -78,21 +78,26 @@ public class MiddlewareJob {
 
         //Procesar Data
         List<Personal> personalMDW = new ArrayList<>();
-        List<Personal> personalBD = iPersonalRepository.findAll();
+        List<Personal> personalBD = iPersonalRepository.getAllPersonal();
         List<Personal> newPersonal = new ArrayList<>();
 
         for (int i = 0; i < response.size(); i++) {
+
             Personal personal = new Personal();
             personal.setCedula(response.get(i).getIdentification());
-            personal.setNombre(response.get(i).getName() + " " +response.get(i).getLast_name());
-            personal.setCargo("CAMBIAR");
+            personal.setNombre(response.get(i).getName() + " " + response.get(i).getLast_name());
+            personal.setCargo(response.get(i).getPosition());
             personal.setFoto(response.get(i).getDns_photo() + "/" + response.get(i).getDir_photo() + response.get(i).getId_photo());
             personal.setCorreo(response.get(i).getEmail());
             personal.setUnidad(response.get(i).getFaculty());
-            personal.setTelefono("CAMBIAR");
-            personal.setExtension(00000);
+            personal.setTelefono("2760010");
+            if (response.get(i).getExtension().equals("")) {
+                personal.setExtension(0);
+            } else {
+                personal.setExtension(Integer.parseInt(response.get(i).getExtension()));
+            }
             personal.setId_jerar(0);
-            personal.setUnidad("CAMBIAR");
+            personal.setUnidad(response.get(i).getDep_code());
 
             personalMDW.add(personal);
         }
@@ -100,7 +105,7 @@ public class MiddlewareJob {
         for (Personal MDW : personalMDW) {
             boolean encontrado = false;
             for (Personal BD : personalBD) {
-                if (BD.getId().equals(MDW.getId())) {
+                if (BD.getCedula().equals(MDW.getCedula())) {
                     encontrado = true;
                     break;
                 }
