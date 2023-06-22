@@ -12,6 +12,7 @@ import unibague.personigramaunibaguebackend.model.Unidad;
 import unibague.personigramaunibaguebackend.repository.IPersonalRepository;
 import unibague.personigramaunibaguebackend.repository.IUnidadesRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class MiddlewareJob {
 
     private String token = "$2y$10$s/5xSDieUMEvYD/gfNqFAeFzvWXt13jhWuugpJzQ9rZQrbGpBYUxi";
 
-    //@Scheduled(fixedRate = 2000000)
+    @Scheduled(fixedRate = 2000000)
     public void updateDependenciesMDW() {
 
         String urlUndMDW = "http://integra.unibague.edu.co/functionariesChart/dependencies?api_token=";
@@ -41,6 +42,7 @@ public class MiddlewareJob {
         List<Unidad> unidadesMDW = new ArrayList<>();
         List<Unidad> unidadesBD = iUnidadesRepository.getAllUnidades();
         List<Unidad> newUnidades = new ArrayList<>();
+        List<Unidad> toDelete = new ArrayList<>();
 
         for (int i = 0; i < response.size(); i++) {
             Unidad unidad = new Unidad();
@@ -51,6 +53,27 @@ public class MiddlewareJob {
             unidadesMDW.add(unidad);
         }
 
+        //Para borrar unidades y sus roles relacionados
+        for (Unidad BD : unidadesBD) {
+            boolean encontrado = false;
+            for (Unidad MDW : unidadesMDW) {
+                if (BD.getId().equals(MDW.getId())) {
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (!encontrado) {
+                toDelete.add(BD);
+            }
+        }
+
+        //TODO -> Borrar roles relacionados
+
+        for (Unidad unidadToDelete : toDelete) {
+            iUnidadesRepository.deleteUnidadById(unidadToDelete.getId());
+        }
+
+        //Para Agregar Unidades
         for (Unidad MDW : unidadesMDW) {
             boolean encontrado = false;
             for (Unidad BD : unidadesBD) {
@@ -63,12 +86,16 @@ public class MiddlewareJob {
                 newUnidades.add(MDW);
             }
         }
-
         iUnidadesRepository.saveAll(newUnidades);
+
+        System.out.println("---------------------------------------------");
+        System.out.println("Fecha: " + LocalDateTime.now());
         System.out.println("Unidades Agregadas: " + newUnidades.size());
+        System.out.println("Unidades Borradas: " + toDelete.size());
+        System.out.println("---------------------------------------------");
     }
 
-    @Scheduled(fixedRate = 10000000)
+    @Scheduled(fixedRate = 2000000)
     public void updateFunctionariesMDW() {
 
         String urlPerMDW = "http://integra.unibague.edu.co/functionariesChart/functionaries?api_token=";
@@ -102,6 +129,7 @@ public class MiddlewareJob {
             personalMDW.add(personal);
         }
 
+        //Para borrar personas
         for (Personal personaBD : personalBD) {
             boolean encontrado = false;
             for (Personal personaMDW : personalMDW) {
@@ -116,10 +144,10 @@ public class MiddlewareJob {
         }
 
         for (Personal personToDelete : toDelete) {
-           iPersonalRepository.deleteByCedula(personToDelete.getCedula());
+            iPersonalRepository.deleteByCedula(personToDelete.getCedula());
         }
 
-// Buscar personas en personalMDW que no estén en personalBD
+        // Para agregar personas
         for (Personal personaMDW : personalMDW) {
             boolean encontrado = false;
             for (Personal personaBD : personalBD) {
@@ -134,7 +162,12 @@ public class MiddlewareJob {
         }
 
         iPersonalRepository.saveAll(newPersonal);
+
+        System.out.println("---------------------------------------------");
+        System.out.println("Fecha: " + LocalDateTime.now());
         System.out.println("Personas Agregadas: " + newPersonal.size());
         System.out.println("Personas Borradas: " + toDelete.size());
+        System.out.println("---------------------------------------------");
+
     }
 }
