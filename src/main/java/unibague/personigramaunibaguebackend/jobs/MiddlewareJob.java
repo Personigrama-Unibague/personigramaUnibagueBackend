@@ -79,6 +79,7 @@ public class MiddlewareJob {
         List<Personal> personalMDW = new ArrayList<>();
         List<Personal> personalBD = iPersonalRepository.getAllPersonal();
         List<Personal> newPersonal = new ArrayList<>();
+        List<Personal> toDelete = new ArrayList<>();
 
         for (int i = 0; i < response.size(); i++) {
 
@@ -101,20 +102,39 @@ public class MiddlewareJob {
             personalMDW.add(personal);
         }
 
-        for (Personal MDW : personalMDW) {
+        for (Personal personaBD : personalBD) {
             boolean encontrado = false;
-            for (Personal BD : personalBD) {
-                if (BD.getCedula().equals(MDW.getCedula())) {
+            for (Personal personaMDW : personalMDW) {
+                if (personaBD.getCedula().equals(personaMDW.getCedula())) {
                     encontrado = true;
                     break;
                 }
             }
             if (!encontrado) {
-                newPersonal.add(MDW);
+                toDelete.add(personaBD);
+            }
+        }
+
+        for (Personal personToDelete : toDelete) {
+           iPersonalRepository.deleteByCedula(personToDelete.getCedula());
+        }
+
+// Buscar personas en personalMDW que no estén en personalBD
+        for (Personal personaMDW : personalMDW) {
+            boolean encontrado = false;
+            for (Personal personaBD : personalBD) {
+                if (personaMDW.getCedula().equals(personaBD.getCedula())) {
+                    encontrado = true;
+                    break;
+                }
+            }
+            if (!encontrado) {
+                newPersonal.add(personaMDW);
             }
         }
 
         iPersonalRepository.saveAll(newPersonal);
         System.out.println("Personas Agregadas: " + newPersonal.size());
+        System.out.println("Personas Borradas: " + toDelete.size());
     }
 }

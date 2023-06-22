@@ -132,7 +132,7 @@ public class PersonalService {
      */
     public void getDeletePersonaById(String id, String unidad) {
         try {
-            iPersonalRepository.deleteByCedula(id, unidad);
+            iPersonalRepository.deleteByCedulaAndUnidad(id, unidad);
         } catch (Exception e) {
             e.printStackTrace();
         }

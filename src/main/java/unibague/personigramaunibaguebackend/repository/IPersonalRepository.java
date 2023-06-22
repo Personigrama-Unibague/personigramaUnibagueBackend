@@ -70,7 +70,7 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
     Boolean existByCedula(String id);
 
     /**
-     * Query para eliminar una persona por cedula
+     * Query para eliminar una persona por cedula y unidad
      *
      * @param id     id de la persona
      * @param unidad unidad a la que pertenece la persona
@@ -78,7 +78,17 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
     @Transactional
     @Modifying
     @Query(value = "delete from personal where cedula = :id and unidad = :unidad", nativeQuery = true)
-    void deleteByCedula(String id, String unidad);
+    void deleteByCedulaAndUnidad(String id, String unidad);
+
+    /**
+     * Query para eliminar una persona por cedula
+     *
+     * @param cedula     cedula de la persona
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "delete from personal where cedula = :cedula", nativeQuery = true)
+    void deleteByCedula(String cedula);
 
     /**
      * Query para guardar persona
