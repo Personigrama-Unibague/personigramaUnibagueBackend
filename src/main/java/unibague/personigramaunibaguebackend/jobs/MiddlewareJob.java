@@ -10,6 +10,7 @@ import unibague.personigramaunibaguebackend.model.FunctionariesMDW;
 import unibague.personigramaunibaguebackend.model.Personal;
 import unibague.personigramaunibaguebackend.model.Unidad;
 import unibague.personigramaunibaguebackend.repository.IPersonalRepository;
+import unibague.personigramaunibaguebackend.repository.IRolesRepository;
 import unibague.personigramaunibaguebackend.repository.IUnidadesRepository;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,9 @@ public class MiddlewareJob {
     @Autowired
     private IPersonalRepository iPersonalRepository;
 
+    @Autowired
+    private IRolesRepository iRolesRepository;
+
     private String token = "$2y$10$s/5xSDieUMEvYD/gfNqFAeFzvWXt13jhWuugpJzQ9rZQrbGpBYUxi";
 
     @Scheduled(fixedRate = 2000000)
@@ -37,6 +41,7 @@ public class MiddlewareJob {
         String urlUndMDW = "http://integra.unibague.edu.co/functionariesChart/dependencies?api_token=";
         DependenciesMDW[] res = restTemplate.getForObject(urlUndMDW + token, DependenciesMDW[].class);
         List<DependenciesMDW> response = List.of(res);
+        Integer counterRoles = 0;
 
         //Procesar Data
         List<Unidad> unidadesMDW = new ArrayList<>();
@@ -67,10 +72,12 @@ public class MiddlewareJob {
             }
         }
 
-        //TODO -> Borrar roles relacionados
+        //TODO-> Validar que pasa con las personas de la unidad borrada
 
         for (Unidad unidadToDelete : toDelete) {
+            counterRoles += iRolesRepository.countRolByUnidad(unidadToDelete.getId());
             iUnidadesRepository.deleteUnidadById(unidadToDelete.getId());
+            iRolesRepository.deleteRolByUnidad(unidadToDelete.getId());
         }
 
         //Para Agregar Unidades
@@ -92,6 +99,7 @@ public class MiddlewareJob {
         System.out.println("Fecha: " + LocalDateTime.now());
         System.out.println("Unidades Agregadas: " + newUnidades.size());
         System.out.println("Unidades Borradas: " + toDelete.size());
+        System.out.println("Roles Borrados: " + counterRoles);
         System.out.println("---------------------------------------------");
     }
 

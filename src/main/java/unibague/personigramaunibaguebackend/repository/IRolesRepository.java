@@ -97,7 +97,22 @@ public interface IRolesRepository extends JpaRepository<Roles, Long> {
     void updateIdJerarRol(Integer antiguo_id_jerar, Integer nuevo_id_jerar, String unidad);
 
 
+    /**
+     * Metodo para eliminar roles por unidad
+     *
+     * @param unidad unidad a la que pertenece el rol
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM roles WHERE unidad=:unidad", nativeQuery = true)
+    void deleteRolByUnidad(String unidad);
 
-
-
+    /**
+     * Metodo para contar los roles por unidad
+     *
+     * @param unidad unidad a la que pertenece el rol
+     * @return Numero de roles en la unidad
+     */
+    @Query(value = "select count(*) from roles WHERE unidad=:unidad", nativeQuery = true)
+    Integer countRolByUnidad(String unidad);
 }

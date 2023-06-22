@@ -43,6 +43,10 @@ public interface IUnidadesRepository extends JpaRepository<Unidad, Long> {
     @Query(value = "select * from unidades where id = :id", nativeQuery = true)
     Unidad getUndById(String id);
 
+    /**
+     * Metodo para borrar unidades por id
+     * @param id id de la unidad
+     */
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM public.unidades WHERE id=:id", nativeQuery = true)
