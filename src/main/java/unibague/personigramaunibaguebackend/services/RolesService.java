@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import unibague.personigramaunibaguebackend.model.Roles;
 import unibague.personigramaunibaguebackend.repository.ILoginRepository;
+import unibague.personigramaunibaguebackend.repository.IPersonalRepository;
 import unibague.personigramaunibaguebackend.repository.IRolesRepository;
 
 import java.util.List;
@@ -18,6 +19,9 @@ public class RolesService {
      */
     @Autowired
     private IRolesRepository iRolesRepository;
+
+    @Autowired
+    private IPersonalRepository iPersonalRepository;
 
     /**
      * Controlador para guardar roles
@@ -86,9 +90,10 @@ public class RolesService {
      * @param nuevo   nuevo id_jerar del rol
      * @param unidad  unidad del rol
      */
-    public void getUpdateIdJerarRol(String antiguo, String nuevo, String unidad) {
+    public void getUpdateIdJerarRol(Integer antiguo, Integer nuevo, String unidad) {
         try {
             iRolesRepository.updateIdJerarRol(antiguo, nuevo, unidad);
+            iPersonalRepository.updateIdJerarNewUpdatedRol(antiguo, nuevo, unidad);
             System.out.println("------------- pruebas --------------------");
             System.out.println(antiguo);
             System.out.println(nuevo);

@@ -26,7 +26,7 @@ public class Roles {
     @Column(nullable = false)
     @Getter
     @Setter
-    private String id_jerar;
+    private Integer id_jerar;
 
     //Nombre de la seccion
     @Column(nullable = false)

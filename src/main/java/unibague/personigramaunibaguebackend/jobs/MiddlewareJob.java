@@ -66,10 +66,9 @@ public class MiddlewareJob {
 
         iUnidadesRepository.saveAll(newUnidades);
         System.out.println("Unidades Agregadas: " + newUnidades.size());
-        System.out.println("Ejecutado");
     }
 
-    //@Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 10000000)
     public void updateFunctionariesMDW() {
 
         String urlPerMDW = "http://integra.unibague.edu.co/functionariesChart/functionaries?api_token=";
@@ -117,6 +116,5 @@ public class MiddlewareJob {
 
         iPersonalRepository.saveAll(newPersonal);
         System.out.println("Personas Agregadas: " + newPersonal.size());
-        System.out.println("Ejecutado");
     }
 }

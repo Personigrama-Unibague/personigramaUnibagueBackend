@@ -17,6 +17,7 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
 
     /**
      * Query que trae el personal de la universidad
+     *
      * @return Lista de personas
      */
     @Query(value = "select * from personal", nativeQuery = true)
@@ -131,6 +132,18 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
     @Modifying
     @Query(value = "update personal set id_jerar=0 where unidad=:unidad and id_jerar=:id_jerar", nativeQuery = true)
     void updateIdJerarDefaultAllSection(String unidad, Integer id_jerar);
+
+    /**
+     * Query para actualizar masivamente a todas las personas de la unidad el Id_jerar a default
+     *
+     * @param unidad       unidad a modificar
+     * @param old_id_jerar viejo id_jerar a modificar
+     * @param new_id_jerar nuevo id_jerar a modificar
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "update personal set id_jerar=:new_id_jerar where unidad=:unidad and id_jerar=:old_id_jerar", nativeQuery = true)
+    void updateIdJerarNewUpdatedRol(Integer old_id_jerar, Integer new_id_jerar, String unidad);
 
 
     //----------------------------------------------------------------------------------------------------------

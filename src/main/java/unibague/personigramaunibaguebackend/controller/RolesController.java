@@ -104,7 +104,7 @@ public class RolesController {
      * @param unidad  unidad del rol
      */
     @GetMapping("/updateIdJerarRol/{antiguo}/{nuevo}/{unidad}")
-    public ResponseEntity<String> getUpdateIdJerarRol(@PathVariable String antiguo, @PathVariable String nuevo, @PathVariable String unidad) throws Exception {
+    public ResponseEntity<String> getUpdateIdJerarRol(@PathVariable Integer antiguo, @PathVariable Integer nuevo, @PathVariable String unidad) throws Exception {
         try {
             rolesService.getUpdateIdJerarRol(antiguo, nuevo, unidad);
             return ResponseEntity.ok("Rol actualizado correctamente");

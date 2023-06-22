@@ -86,15 +86,15 @@ public interface IRolesRepository extends JpaRepository<Roles, Long> {
     @Modifying
     @Query(value = "UPDATE roles " +
             "SET id_jerar = CASE " +
-            "  WHEN id_jerar = ?1 THEN CAST(?2 AS character varying) " +
-            "  WHEN ?2 < ?1 AND id_jerar >= ?2 AND id_jerar <= ?1 THEN CAST(CAST(id_jerar AS INTEGER) + 1 AS character varying) " +
-            "  WHEN ?2 > ?1 AND id_jerar >= ?1 AND id_jerar <= ?2 THEN CAST(CAST(id_jerar AS INTEGER) - 1 AS character varying) " +
+            "  WHEN id_jerar = ?1 THEN ?2 " +
+            "  WHEN ?2 < ?1 AND id_jerar >= ?2 AND id_jerar <= ?1 THEN id_jerar + 1 " +
+            "  WHEN ?2 > ?1 AND id_jerar >= ?1 AND id_jerar <= ?2 THEN id_jerar - 1 " +
             "  ELSE id_jerar " +
             "END " +
             "WHERE unidad = ?3 " +
             "  AND ((?2 < ?1 AND id_jerar >= ?2 AND id_jerar <= ?1) " +
             "       OR (?2 > ?1 AND id_jerar >= ?1 AND id_jerar <= ?2))", nativeQuery = true)
-    void updateIdJerarRol(String antiguo_id_jerar, String nuevo_id_jerar, String unidad);
+    void updateIdJerarRol(Integer antiguo_id_jerar, Integer nuevo_id_jerar, String unidad);
 
 
 
