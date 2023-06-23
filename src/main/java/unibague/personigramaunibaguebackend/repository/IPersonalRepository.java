@@ -83,12 +83,32 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
     /**
      * Query para eliminar una persona por cedula
      *
-     * @param cedula     cedula de la persona
+     * @param cedula cedula de la persona
      */
     @Transactional
     @Modifying
     @Query(value = "delete from personal where cedula = :cedula", nativeQuery = true)
     void deleteByCedula(String cedula);
+
+    /**
+     * Query para eliminar una persona por unidad
+     *
+     * @param unidad
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM personal WHERE unidad=:unidad", nativeQuery = true)
+    void deleteByUnidad(String unidad);
+
+
+    /**
+     * Metodo para contar personas por unidad
+     *
+     * @param unidad Unidad a la que pertenece la persona
+     * @return Numero de personas en la unidad
+     */
+    @Query(value = "select count(*) from personal where unidad = :unidad", nativeQuery = true)
+    Integer countPersonalByUnidad(String unidad);
 
     /**
      * Query para guardar persona

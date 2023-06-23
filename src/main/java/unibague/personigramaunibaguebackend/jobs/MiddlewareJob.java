@@ -17,6 +17,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Job encargado de obtener la informacion del Middleware y realizar procesos de validacion contra la bd interna
+ */
 @Component
 @EnableScheduling
 public class MiddlewareJob {
@@ -35,6 +38,9 @@ public class MiddlewareJob {
 
     private String token = "$2y$10$s/5xSDieUMEvYD/gfNqFAeFzvWXt13jhWuugpJzQ9rZQrbGpBYUxi";
 
+    /**
+     * Metodo para validar y descargar las unidades, los roles y las personas relacionadas a la misma
+     */
     @Scheduled(fixedRate = 2000000)
     public void updateDependenciesMDW() {
 
@@ -42,6 +48,7 @@ public class MiddlewareJob {
         DependenciesMDW[] res = restTemplate.getForObject(urlUndMDW + token, DependenciesMDW[].class);
         List<DependenciesMDW> response = List.of(res);
         Integer counterRoles = 0;
+        Integer counterPersonal = 0;
 
         //Procesar Data
         List<Unidad> unidadesMDW = new ArrayList<>();
@@ -72,10 +79,11 @@ public class MiddlewareJob {
             }
         }
 
-        //TODO-> Validar que pasa con las personas de la unidad borrada
 
         for (Unidad unidadToDelete : toDelete) {
+            counterPersonal += iPersonalRepository.countPersonalByUnidad(unidadToDelete.getId());
             counterRoles += iRolesRepository.countRolByUnidad(unidadToDelete.getId());
+            iPersonalRepository.deleteByUnidad(unidadToDelete.getId());
             iUnidadesRepository.deleteUnidadById(unidadToDelete.getId());
             iRolesRepository.deleteRolByUnidad(unidadToDelete.getId());
         }
@@ -100,9 +108,12 @@ public class MiddlewareJob {
         System.out.println("Unidades Agregadas: " + newUnidades.size());
         System.out.println("Unidades Borradas: " + toDelete.size());
         System.out.println("Roles Borrados: " + counterRoles);
-        System.out.println("---------------------------------------------");
+        System.out.println("Personas De La Unidad Borradas: " + counterPersonal);
     }
 
+    /**
+     * Metodo para validar y descargar las personas
+     */
     @Scheduled(fixedRate = 2000000)
     public void updateFunctionariesMDW() {
 
