@@ -44,71 +44,75 @@ public class MiddlewareJob {
     @Scheduled(fixedRate = 2000000)
     public void updateDependenciesMDW() {
 
-        String urlUndMDW = "http://integra.unibague.edu.co/functionariesChart/dependencies?api_token=";
-        DependenciesMDW[] res = restTemplate.getForObject(urlUndMDW + token, DependenciesMDW[].class);
-        List<DependenciesMDW> response = List.of(res);
-        Integer counterRoles = 0;
-        Integer counterPersonal = 0;
+        try {
+            String urlUndMDW = "http://integra.unibague.edu.co/functionariesChart/dependencies?api_token=";
+            DependenciesMDW[] res = restTemplate.getForObject(urlUndMDW + token, DependenciesMDW[].class);
+            List<DependenciesMDW> response = List.of(res);
+            Integer counterRoles = 0;
+            Integer counterPersonal = 0;
 
-        //Procesar Data
-        List<Unidad> unidadesMDW = new ArrayList<>();
-        List<Unidad> unidadesBD = iUnidadesRepository.getAllUnidades();
-        List<Unidad> newUnidades = new ArrayList<>();
-        List<Unidad> toDelete = new ArrayList<>();
+            //Procesar Data
+            List<Unidad> unidadesMDW = new ArrayList<>();
+            List<Unidad> unidadesBD = iUnidadesRepository.getAllUnidades();
+            List<Unidad> newUnidades = new ArrayList<>();
+            List<Unidad> toDelete = new ArrayList<>();
 
-        for (int i = 0; i < response.size(); i++) {
-            Unidad unidad = new Unidad();
-            unidad.setId(response.get(i).getDep_code());
-            unidad.setNombre(response.get(i).getDep_name());
-            unidad.setParent_id(response.get(i).getDep_father());
+            for (int i = 0; i < response.size(); i++) {
+                Unidad unidad = new Unidad();
+                unidad.setId(response.get(i).getDep_code());
+                unidad.setNombre(response.get(i).getDep_name());
+                unidad.setParent_id(response.get(i).getDep_father());
 
-            unidadesMDW.add(unidad);
-        }
-
-        //Para borrar unidades y sus roles relacionados
-        for (Unidad BD : unidadesBD) {
-            boolean encontrado = false;
-            for (Unidad MDW : unidadesMDW) {
-                if (BD.getId().equals(MDW.getId())) {
-                    encontrado = true;
-                    break;
-                }
+                unidadesMDW.add(unidad);
             }
-            if (!encontrado) {
-                toDelete.add(BD);
-            }
-        }
 
-
-        for (Unidad unidadToDelete : toDelete) {
-            counterPersonal += iPersonalRepository.countPersonalByUnidad(unidadToDelete.getId());
-            counterRoles += iRolesRepository.countRolByUnidad(unidadToDelete.getId());
-            iPersonalRepository.deleteByUnidad(unidadToDelete.getId());
-            iUnidadesRepository.deleteUnidadById(unidadToDelete.getId());
-            iRolesRepository.deleteRolByUnidad(unidadToDelete.getId());
-        }
-
-        //Para Agregar Unidades
-        for (Unidad MDW : unidadesMDW) {
-            boolean encontrado = false;
+            //Para borrar unidades y sus roles relacionados
             for (Unidad BD : unidadesBD) {
-                if (BD.getId().equals(MDW.getId())) {
-                    encontrado = true;
-                    break;
+                boolean encontrado = false;
+                for (Unidad MDW : unidadesMDW) {
+                    if (BD.getId().equals(MDW.getId())) {
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado) {
+                    toDelete.add(BD);
                 }
             }
-            if (!encontrado) {
-                newUnidades.add(MDW);
-            }
-        }
-        iUnidadesRepository.saveAll(newUnidades);
 
-        System.out.println("---------------------------------------------");
-        System.out.println("Fecha: " + LocalDateTime.now());
-        System.out.println("Unidades Agregadas: " + newUnidades.size());
-        System.out.println("Unidades Borradas: " + toDelete.size());
-        System.out.println("Roles Borrados: " + counterRoles);
-        System.out.println("Personas De La Unidad Borradas: " + counterPersonal);
+
+            for (Unidad unidadToDelete : toDelete) {
+                counterPersonal += iPersonalRepository.countPersonalByUnidad(unidadToDelete.getId());
+                counterRoles += iRolesRepository.countRolByUnidad(unidadToDelete.getId());
+                iPersonalRepository.deleteByUnidad(unidadToDelete.getId());
+                iUnidadesRepository.deleteUnidadById(unidadToDelete.getId());
+                iRolesRepository.deleteRolByUnidad(unidadToDelete.getId());
+            }
+
+            //Para Agregar Unidades
+            for (Unidad MDW : unidadesMDW) {
+                boolean encontrado = false;
+                for (Unidad BD : unidadesBD) {
+                    if (BD.getId().equals(MDW.getId())) {
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado) {
+                    newUnidades.add(MDW);
+                }
+            }
+            iUnidadesRepository.saveAll(newUnidades);
+
+            System.out.println("---------------------------------------------");
+            System.out.println("Fecha: " + LocalDateTime.now());
+            System.out.println("Unidades Agregadas: " + newUnidades.size());
+            System.out.println("Unidades Borradas: " + toDelete.size());
+            System.out.println("Roles Borrados: " + counterRoles);
+            System.out.println("Personas De La Unidad Borradas: " + counterPersonal);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -116,77 +120,79 @@ public class MiddlewareJob {
      */
     @Scheduled(fixedRate = 2000000)
     public void updateFunctionariesMDW() {
+        try {
+            String urlPerMDW = "http://integra.unibague.edu.co/functionariesChart/functionaries?api_token=";
+            FunctionariesMDW[] res = restTemplate.getForObject(urlPerMDW + token, FunctionariesMDW[].class);
+            List<FunctionariesMDW> response = List.of(res);
 
-        String urlPerMDW = "http://integra.unibague.edu.co/functionariesChart/functionaries?api_token=";
-        FunctionariesMDW[] res = restTemplate.getForObject(urlPerMDW + token, FunctionariesMDW[].class);
-        List<FunctionariesMDW> response = List.of(res);
+            //Procesar Data
+            List<Personal> personalMDW = new ArrayList<>();
+            List<Personal> personalBD = iPersonalRepository.getAllPersonal();
+            List<Personal> newPersonal = new ArrayList<>();
+            List<Personal> toDelete = new ArrayList<>();
 
-        //Procesar Data
-        List<Personal> personalMDW = new ArrayList<>();
-        List<Personal> personalBD = iPersonalRepository.getAllPersonal();
-        List<Personal> newPersonal = new ArrayList<>();
-        List<Personal> toDelete = new ArrayList<>();
+            for (int i = 0; i < response.size(); i++) {
 
-        for (int i = 0; i < response.size(); i++) {
-
-            Personal personal = new Personal();
-            personal.setCedula(response.get(i).getIdentification());
-            personal.setNombre(response.get(i).getName() + " " + response.get(i).getLast_name());
-            personal.setCargo(response.get(i).getPosition());
-            personal.setFoto(response.get(i).getDns_photo() + "/" + response.get(i).getDir_photo() + response.get(i).getId_photo());
-            personal.setCorreo(response.get(i).getEmail());
-            personal.setUnidad(response.get(i).getFaculty());
-            personal.setTelefono("2760010");
-            if (response.get(i).getExtension().equals("")) {
-                personal.setExtension(0);
-            } else {
-                personal.setExtension(Integer.parseInt(response.get(i).getExtension()));
-            }
-            personal.setId_jerar(0);
-            personal.setUnidad(response.get(i).getDep_code());
-
-            personalMDW.add(personal);
-        }
-
-        //Para borrar personas
-        for (Personal personaBD : personalBD) {
-            boolean encontrado = false;
-            for (Personal personaMDW : personalMDW) {
-                if (personaBD.getCedula().equals(personaMDW.getCedula())) {
-                    encontrado = true;
-                    break;
+                Personal personal = new Personal();
+                personal.setCedula(response.get(i).getIdentification());
+                personal.setNombre(response.get(i).getName() + " " + response.get(i).getLast_name());
+                personal.setCargo(response.get(i).getPosition());
+                personal.setFoto(response.get(i).getDns_photo() + "/" + response.get(i).getDir_photo() + response.get(i).getId_photo());
+                personal.setCorreo(response.get(i).getEmail());
+                personal.setUnidad(response.get(i).getFaculty());
+                personal.setTelefono("2760010");
+                if (response.get(i).getExtension().equals("")) {
+                    personal.setExtension(0);
+                } else {
+                    personal.setExtension(Integer.parseInt(response.get(i).getExtension()));
                 }
-            }
-            if (!encontrado) {
-                toDelete.add(personaBD);
-            }
-        }
+                personal.setId_jerar(0);
+                personal.setUnidad(response.get(i).getDep_code());
 
-        for (Personal personToDelete : toDelete) {
-            iPersonalRepository.deleteByCedula(personToDelete.getCedula());
-        }
+                personalMDW.add(personal);
+            }
 
-        // Para agregar personas
-        for (Personal personaMDW : personalMDW) {
-            boolean encontrado = false;
+            //Para borrar personas
             for (Personal personaBD : personalBD) {
-                if (personaMDW.getCedula().equals(personaBD.getCedula())) {
-                    encontrado = true;
-                    break;
+                boolean encontrado = false;
+                for (Personal personaMDW : personalMDW) {
+                    if (personaBD.getCedula().equals(personaMDW.getCedula())) {
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado) {
+                    toDelete.add(personaBD);
                 }
             }
-            if (!encontrado) {
-                newPersonal.add(personaMDW);
+
+            for (Personal personToDelete : toDelete) {
+                iPersonalRepository.deleteByCedula(personToDelete.getCedula());
             }
+
+            // Para agregar personas
+            for (Personal personaMDW : personalMDW) {
+                boolean encontrado = false;
+                for (Personal personaBD : personalBD) {
+                    if (personaMDW.getCedula().equals(personaBD.getCedula())) {
+                        encontrado = true;
+                        break;
+                    }
+                }
+                if (!encontrado) {
+                    newPersonal.add(personaMDW);
+                }
+            }
+
+            iPersonalRepository.saveAll(newPersonal);
+
+            System.out.println("---------------------------------------------");
+            System.out.println("Fecha: " + LocalDateTime.now());
+            System.out.println("Personas Agregadas: " + newPersonal.size());
+            System.out.println("Personas Borradas: " + toDelete.size());
+            System.out.println("---------------------------------------------");
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
-        iPersonalRepository.saveAll(newPersonal);
-
-        System.out.println("---------------------------------------------");
-        System.out.println("Fecha: " + LocalDateTime.now());
-        System.out.println("Personas Agregadas: " + newPersonal.size());
-        System.out.println("Personas Borradas: " + toDelete.size());
-        System.out.println("---------------------------------------------");
-
     }
 }

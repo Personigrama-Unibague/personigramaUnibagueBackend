@@ -49,14 +49,15 @@ public class RolesController {
      * @throws Exception
      */
     @GetMapping("/getAllRolesByUnidad/{unidad}")
-    public List<Roles> getAllRolesByUnidad(@PathVariable String unidad) throws Exception {
+    public ResponseEntity<List<Roles>> getAllRolesByUnidad(@PathVariable String unidad) throws Exception {
         List<Roles> roles = null;
         try {
             roles = rolesService.getAllRolesByUnidad(unidad);
+            return ResponseEntity.ok(roles);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(roles);
         }
-        return roles;
     }
 
     /**

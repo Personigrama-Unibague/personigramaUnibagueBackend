@@ -56,24 +56,4 @@ public class UnidadesService {
             return null;
         }
     }
-
-    /**
-     * Metodo para pasar informacion de Json a Base De Datos
-     */
-    public void getSaveJson() {
-        List<Unidad> unidades = null;
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            unidades = objectMapper.readValue(new File("./src/main/resources/static/unidades.json"), new TypeReference<List<Unidad>>() {
-            });
-            iUnidadesRepository.saveAll(unidades);
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-        } catch (JsonGenerationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 }

@@ -30,14 +30,15 @@ public class PersonalController {
      * @throws Exception
      */
     @GetMapping("/getPersonasDistinct/{unidad}")
-    public List<Personal> getPersonasDistinct(@PathVariable String unidad) throws Exception {
+    public ResponseEntity<List<Personal>> getPersonasDistinct(@PathVariable String unidad) throws Exception {
         List<Personal> list = new ArrayList<>();
         try {
             list = personalService.getPersonasDistinct(unidad);
+            return ResponseEntity.ok(list);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(list);
         }
-        return list;
     }
 
     /**
@@ -47,14 +48,15 @@ public class PersonalController {
      * @throws Exception
      */
     @GetMapping("/getPersonal")
-    public List<Personal> getAllPersonas() throws Exception {
+    public ResponseEntity<List<Personal>> getAllPersonas() throws Exception {
         List<Personal> list = new ArrayList<>();
         try {
             list = personalService.getAllPersonas();
+            return ResponseEntity.ok(list);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(list);
         }
-        return list;
     }
 
     /**
@@ -65,14 +67,15 @@ public class PersonalController {
      * @throws Exception
      */
     @GetMapping("/findPersonalByUnidad/{und}")
-    public List<Personal> getFindPersonalByUnidad(@PathVariable String und) throws Exception {
+    public ResponseEntity<List<Personal>> getFindPersonalByUnidad(@PathVariable String und) throws Exception {
         List<Personal> list = new ArrayList<>();
         try {
             list = personalService.getFindPersonalByUnidad(und);
+            return ResponseEntity.ok(list);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(list);
         }
-        return list;
     }
 
     /**
@@ -101,14 +104,15 @@ public class PersonalController {
      * @throws Exception
      */
     @GetMapping("/findPersonaById/{id}")
-    public Personal getFindPersonaById(@PathVariable String id) throws Exception {
+    public ResponseEntity<Personal> getFindPersonaById(@PathVariable String id) throws Exception {
         Personal persona = new Personal();
         try {
             persona = personalService.getFindPersonaById(id);
+            return ResponseEntity.ok(persona);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.badRequest().body(persona);
         }
-        return persona;
     }
 
     /**
@@ -187,24 +191,4 @@ public class PersonalController {
             return ResponseEntity.badRequest().body("Error: persona no actualizada");
         }
     }
-
-    //----------------------------------------------------------------------------------------------------------
-
-    /**
-     * Metodo para pasar informacion de Json a Base De Datos
-     *
-     * @return Respueta HTTP
-     * @throws Exception
-     */
-    @GetMapping("/saveJson")
-    public ResponseEntity<String> getSaveJson() throws Exception {
-        try {
-            personalService.guardarJson();
-            return ResponseEntity.ok("Json Cargado Correctamente");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ocurrió un error");
-        }
-    }
-
 }

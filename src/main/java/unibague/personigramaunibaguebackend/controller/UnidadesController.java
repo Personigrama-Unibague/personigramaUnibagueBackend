@@ -28,14 +28,16 @@ public class UnidadesController {
      * @throws Exception
      */
     @GetMapping("/getUnidades")
-    public List<Unidad> getUnidades() throws Exception {
+    public ResponseEntity<List<Unidad>> getUnidades() throws Exception {
         List<Unidad> list = new ArrayList<>();
         try {
             list = unidadesService.getUnidades();
+            return ResponseEntity.ok(list);
+
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(list);
         }
-        return list;
     }
 
     /**
@@ -46,30 +48,14 @@ public class UnidadesController {
      * @throws Exception
      */
     @GetMapping("/getUnidadNameById/{id}")
-    public String getUnidadNameById(@PathVariable String id) throws Exception {
+    public ResponseEntity<String> getUnidadNameById(@PathVariable String id) throws Exception {
         String unidad = "";
         try {
             unidad = unidadesService.getUnidadNameById(id);
+            return ResponseEntity.ok(unidad);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return unidad;
-    }
-
-    /**
-     * Metodo para pasar informacion de Json a Base De Datos
-     *
-     * @throws Exception
-     */
-    @GetMapping("/saveJson")
-    public ResponseEntity<String> getSaveJson() throws Exception {
-        try {
-            unidadesService.getSaveJson();
-            return ResponseEntity.ok("Json Cargado Correctamente");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ocurrió un error");
+            return ResponseEntity.badRequest().body("Error: Unidad no encontrada");
         }
     }
-
 }

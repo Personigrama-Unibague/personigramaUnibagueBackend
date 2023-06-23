@@ -31,14 +31,15 @@ public class LoginController {
      * @throws Exception
      */
     @GetMapping("/findAllUsers")
-    public List<?> getFindAllUsers() throws Exception {
+    public ResponseEntity<List<?>> getFindAllUsers() throws Exception {
         List<?> list = new ArrayList<>();
         try {
             list = loginService.getFindAllUsers();
+            return ResponseEntity.ok(list);
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(list);
         }
-        return list;
     }
 
     /**
@@ -88,11 +89,13 @@ public class LoginController {
      * @throws Exception
      */
     @GetMapping("/deleteUser/{id}")
-    public void getDeleteUser(@PathVariable Integer id) throws Exception {
+    public ResponseEntity<String> getDeleteUser(@PathVariable Integer id) throws Exception {
         try {
             loginService.getDeleteUser(id);
+            return ResponseEntity.ok("Persona Eliminada Correctamente");
         } catch (Exception e) {
             e.printStackTrace();
+            return ResponseEntity.badRequest().body("Error: Persona No Eliminada Correctamente");
         }
     }
 }
