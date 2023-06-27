@@ -117,7 +117,8 @@ public class PersonalService {
             personal.setExtension(persona.getExtension());
             personal.setFoto(persona.getFoto());
             personal.setUnidad(persona.getUnidad());
-            personal.setId_jerar(persona.getId_jerar());
+            personal.setId_jerar(0);
+            personal.setOriginal("DUPLICADO");
 
             iPersonalRepository.save(personal);
         } catch (Exception e) {

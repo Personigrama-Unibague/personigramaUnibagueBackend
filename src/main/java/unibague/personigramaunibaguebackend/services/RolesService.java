@@ -94,10 +94,6 @@ public class RolesService {
         try {
             iRolesRepository.updateIdJerarRol(antiguo, nuevo, unidad);
             iPersonalRepository.updateIdJerarNewUpdatedRol(antiguo, nuevo, unidad);
-            System.out.println("------------- pruebas --------------------");
-            System.out.println(antiguo);
-            System.out.println(nuevo);
-            System.out.println(unidad);
         } catch (Exception e) {
             e.printStackTrace();
         }

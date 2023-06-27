@@ -175,6 +175,20 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
     @Query(value = "update personal set id_jerar=:new_id_jerar where unidad=:unidad and id_jerar=:old_id_jerar", nativeQuery = true)
     void updateIdJerarNewUpdatedRol(Integer old_id_jerar, Integer new_id_jerar, String unidad);
 
+    @Transactional
+    @Modifying
+    @Query(value = "update personal set \n" +
+            "cargo=:cargo,\n" +
+            "extension=:extension,\n" +
+            "foto=:foto\n" +
+            "where cedula=:cedula ", nativeQuery = true)
+    void updateMDWChangingValues(String cargo, Integer extension, String foto, String cedula);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update personal set unidad=:unidad where cedula=:cedula and original='ORIGINAL'", nativeQuery = true)
+    void updateOriginalUnidadMDW(String unidad, String cedula);
+
 
     //----------------------------------------------------------------------------------------------------------
 

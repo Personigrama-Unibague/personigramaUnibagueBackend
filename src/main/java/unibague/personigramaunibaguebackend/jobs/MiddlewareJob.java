@@ -80,7 +80,6 @@ public class MiddlewareJob {
                 }
             }
 
-
             for (Unidad unidadToDelete : toDelete) {
                 counterPersonal += iPersonalRepository.countPersonalByUnidad(unidadToDelete.getId());
                 counterRoles += iRolesRepository.countRolByUnidad(unidadToDelete.getId());
@@ -110,6 +109,7 @@ public class MiddlewareJob {
             System.out.println("Unidades Borradas: " + toDelete.size());
             System.out.println("Roles Borrados: " + counterRoles);
             System.out.println("Personas De La Unidad Borradas: " + counterPersonal);
+            System.out.println("---------------------------------------------");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -148,6 +148,7 @@ public class MiddlewareJob {
                 }
                 personal.setId_jerar(0);
                 personal.setUnidad(response.get(i).getDep_code());
+                personal.setOriginal("ORIGINAL");
 
                 personalMDW.add(personal);
             }
@@ -170,16 +171,28 @@ public class MiddlewareJob {
                 iPersonalRepository.deleteByCedula(personToDelete.getCedula());
             }
 
-            // Para agregar personas
             for (Personal personaMDW : personalMDW) {
-                boolean encontrado = false;
+                boolean existsInBD = false;
+
                 for (Personal personaBD : personalBD) {
+
                     if (personaMDW.getCedula().equals(personaBD.getCedula())) {
-                        encontrado = true;
-                        break;
+                        existsInBD = true;
+
+                        if (!personaMDW.getCargo().equals(personaBD.getCargo()) || !personaMDW.getExtension().equals(personaBD.getExtension()) || !personaMDW.getFoto().equals(personaBD.getFoto())) {
+                            iPersonalRepository.updateMDWChangingValues(personaMDW.getCargo(), personaMDW.getExtension(), personaMDW.getFoto(), personaBD.getCedula());
+                        }
+
+                        if (personaBD.getOriginal().equals("ORIGINAL")) {
+                            if (!personaMDW.getUnidad().equals(personaBD.getUnidad())) {
+                                iPersonalRepository.updateOriginalUnidadMDW(personaMDW.getUnidad(), personaBD.getCedula());
+                            }
+                        }
+
                     }
                 }
-                if (!encontrado) {
+
+                if (!existsInBD) {
                     newPersonal.add(personaMDW);
                 }
             }

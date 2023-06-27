@@ -64,4 +64,9 @@ public class Personal {
     @Getter
     @Setter
     private Integer id_jerar;
+
+    //Estado para validar si es una copia o el original
+    @Getter
+    @Setter
+    private String original;
 }
