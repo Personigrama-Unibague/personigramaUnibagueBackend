@@ -19,14 +19,15 @@ public interface IRolesRepository extends JpaRepository<Roles, Long> {
     /**
      * Query para guardar un nuevo rol
      *
-     * @param id_jerar Nuevo id_jerarquico
-     * @param nombre   Nombre del rol
-     * @param unidad   Unidad a la que pertenece el rol
+     * @param nombre Nombre del rol
+     * @param unidad Unidad a la que pertenece el rol
      */
     @Transactional
     @Modifying
-    @Query(value = "INSERT INTO public.roles(id_jerar, nombre, unidad)VALUES(:id_jerar, :nombre, :unidad)", nativeQuery = true)
-    void saveRol(Integer id_jerar, String nombre, String unidad);
+    @Query(value = "INSERT INTO roles (id_jerar, nombre, unidad) VALUES (" +
+            "(SELECT COALESCE(MAX(id_jerar), 1) + 1 FROM roles WHERE unidad = :unidad), " +
+            ":nombre, :unidad)", nativeQuery = true)
+    void saveRol(String nombre, String unidad);
 
     /**
      * Query para traer todos los roles por unidad

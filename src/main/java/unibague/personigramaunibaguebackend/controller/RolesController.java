@@ -24,16 +24,15 @@ public class RolesController {
     /**
      * Controlador para guardar roles
      *
-     * @param id_jerar Id_jerar de los roles
      * @param nombre   Nombre del rol
      * @param unidad   Unidad a la que va a pertenecer el rol
      * @return Mensaje
      * @throws Exception
      */
-    @GetMapping("/saveRol/{id_jerar}/{nombre}/{unidad}")
-    public ResponseEntity<String> getSaveRol(@PathVariable Integer id_jerar, @PathVariable String nombre, @PathVariable String unidad) throws Exception {
+    @GetMapping("/saveRol/{nombre}/{unidad}")
+    public ResponseEntity<String> getSaveRol(@PathVariable String nombre, @PathVariable String unidad) throws Exception {
         try {
-            rolesService.getSaveRol(id_jerar, nombre, unidad);
+            rolesService.getSaveRol(nombre, unidad);
             return ResponseEntity.ok("Rol Agregado Correctamente");
         } catch (Exception e) {
             e.printStackTrace();
