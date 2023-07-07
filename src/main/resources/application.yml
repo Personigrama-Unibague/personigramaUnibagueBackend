@@ -1,0 +1,15 @@
+server:
+  port: '9090'
+spring:
+  jpa:
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: 'jdbc:postgresql://localhost/postgres'
+    username: postgres
+    password: '1234'
+    hikari:
+      connectionTimeout: '20000'
+      maximumPoolSize: '5'
