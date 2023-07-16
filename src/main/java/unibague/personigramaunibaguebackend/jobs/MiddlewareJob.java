@@ -94,6 +94,10 @@ public class MiddlewareJob {
                 for (Unidad BD : unidadesBD) {
                     if (BD.getId().equals(MDW.getId())) {
                         encontrado = true;
+                        if (!BD.getNombre().equals(MDW.getNombre()) || !BD.getParent_id().equals(MDW.getParent_id())) {
+                            iUnidadesRepository.updateUnidadesMDW(MDW.getId(), MDW.getNombre(), MDW.getParent_id());
+                            System.out.println("Unidad " + MDW.getNombre() + " Actualizada");
+                        }
                         break;
                     }
                 }
@@ -171,6 +175,7 @@ public class MiddlewareJob {
                 iPersonalRepository.deleteByCedula(personToDelete.getCedula());
             }
 
+            //Agregar o actualizar personas
             for (Personal personaMDW : personalMDW) {
                 boolean existsInBD = false;
 
@@ -179,10 +184,21 @@ public class MiddlewareJob {
                     if (personaMDW.getCedula().equals(personaBD.getCedula())) {
                         existsInBD = true;
 
-                        if (!personaMDW.getCargo().equals(personaBD.getCargo()) || !personaMDW.getExtension().equals(personaBD.getExtension()) || !personaMDW.getFoto().equals(personaBD.getFoto())) {
-                            iPersonalRepository.updateMDWChangingValues(personaMDW.getCargo(), personaMDW.getExtension(), personaMDW.getFoto(), personaBD.getCedula());
+                        //Actualiza Cargo, Extension, Foto, Correo
+                        if (!personaMDW.getCargo().equals(personaBD.getCargo()) ||
+                                !personaMDW.getExtension().equals(personaBD.getExtension()) ||
+                                !personaMDW.getFoto().equals(personaBD.getFoto()) ||
+                                !personaMDW.getCorreo().equals(personaBD.getCorreo())
+                        ) {
+                            iPersonalRepository.updateMDWChangingValues(personaMDW.getCargo(),
+                                    personaMDW.getExtension(),
+                                    personaMDW.getFoto(),
+                                    personaMDW.getCorreo(),
+                                    personaBD.getCedula());
+                            System.out.println("Persona " + personaMDW.getNombre() + " Actualizada");
                         }
 
+                        //Actualiza la unidad de los originales
                         if (personaBD.getOriginal().equals("ORIGINAL")) {
                             if (!personaMDW.getUnidad().equals(personaBD.getUnidad())) {
                                 iPersonalRepository.updateOriginalUnidadMDW(personaMDW.getUnidad(), personaBD.getCedula());

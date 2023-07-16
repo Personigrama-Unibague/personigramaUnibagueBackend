@@ -44,10 +44,21 @@ public interface IUnidadesRepository extends JpaRepository<Unidad, Long> {
 
     /**
      * Metodo para borrar unidades por id
+     *
      * @param id id de la unidad
      */
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM public.unidades WHERE id=:id", nativeQuery = true)
     void deleteUnidadById(String id);
+
+    /**
+     * Metodo para actualizar las unidades desde el MDW dependiendo si cambia su nombre o su parent_Id
+     *
+     * @param id id de la unidad
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE unidades SET nombre=:nombre, parent_id=:parent WHERE id=:id", nativeQuery = true)
+    void updateUnidadesMDW(String id, String nombre, String parent);
 }

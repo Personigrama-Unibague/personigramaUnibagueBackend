@@ -180,9 +180,10 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
     @Query(value = "update personal set \n" +
             "cargo=:cargo,\n" +
             "extension=:extension,\n" +
-            "foto=:foto\n" +
+            "foto=:foto,\n" +
+            "correo=:correo,\n" +
             "where cedula=:cedula ", nativeQuery = true)
-    void updateMDWChangingValues(String cargo, Integer extension, String foto, String cedula);
+    void updateMDWChangingValues(String cargo, Integer extension, String foto, String correo, String cedula);
 
     @Transactional
     @Modifying
