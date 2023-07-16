@@ -4,11 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import unibague.personigramaunibaguebackend.model.Personal;
-import unibague.personigramaunibaguebackend.model.ResumeLogin;
-import unibague.personigramaunibaguebackend.model.Unidad;
 import unibague.personigramaunibaguebackend.services.LoginService;
-import unibague.personigramaunibaguebackend.services.PersonalService;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,10 +1,8 @@
 package unibague.personigramaunibaguebackend.model;
 
-import lombok.*;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 //Modelo que mapea las unidades
 

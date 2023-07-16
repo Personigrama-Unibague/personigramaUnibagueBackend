@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import unibague.personigramaunibaguebackend.model.Login;
-import unibague.personigramaunibaguebackend.model.Personal;
-import unibague.personigramaunibaguebackend.model.ResumeLogin;
 
 import java.util.Date;
 import java.util.List;

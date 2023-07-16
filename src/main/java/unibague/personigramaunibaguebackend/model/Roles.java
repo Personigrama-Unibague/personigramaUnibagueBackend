@@ -3,7 +3,6 @@ package unibague.personigramaunibaguebackend.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
 
 //Modelo que mapea los roles de las unidades
 

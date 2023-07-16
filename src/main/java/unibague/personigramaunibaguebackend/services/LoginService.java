@@ -1,20 +1,11 @@
 package unibague.personigramaunibaguebackend.services;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import unibague.personigramaunibaguebackend.model.Login;
-import unibague.personigramaunibaguebackend.model.Personal;
 import unibague.personigramaunibaguebackend.model.ResumeLogin;
 import unibague.personigramaunibaguebackend.repository.ILoginRepository;
-import unibague.personigramaunibaguebackend.repository.IPersonalRepository;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

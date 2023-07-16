@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unibague.personigramaunibaguebackend.model.Personal;
-import unibague.personigramaunibaguebackend.model.Unidad;
 import unibague.personigramaunibaguebackend.services.PersonalService;
 
 import java.util.ArrayList;

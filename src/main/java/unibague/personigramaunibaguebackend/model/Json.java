@@ -2,7 +2,9 @@ package unibague.personigramaunibaguebackend.model;
 
 import lombok.*;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 //Modelo que mapea el Json para la tabla personal
 

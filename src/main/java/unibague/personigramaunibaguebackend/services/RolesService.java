@@ -3,7 +3,6 @@ package unibague.personigramaunibaguebackend.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import unibague.personigramaunibaguebackend.model.Roles;
-import unibague.personigramaunibaguebackend.repository.ILoginRepository;
 import unibague.personigramaunibaguebackend.repository.IPersonalRepository;
 import unibague.personigramaunibaguebackend.repository.IRolesRepository;
 
@@ -26,7 +25,6 @@ public class RolesService {
     /**
      * Controlador para guardar roles
      *
-     * @param id_jerar Id_jerar de los roles
      * @param nombre   Nombre del rol
      * @param unidad   Unidad a la que va a pertenecer el rol
      */
