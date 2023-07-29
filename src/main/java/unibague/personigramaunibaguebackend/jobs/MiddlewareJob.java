@@ -16,6 +16,7 @@ import unibague.personigramaunibaguebackend.repository.IUnidadesRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Job encargado de obtener la informacion del Middleware y realizar procesos de validacion contra la bd interna
@@ -138,20 +139,56 @@ public class MiddlewareJob {
             for (int i = 0; i < response.size(); i++) {
 
                 Personal personal = new Personal();
-                personal.setCedula(response.get(i).getIdentification());
-                personal.setNombre(response.get(i).getName() + " " + response.get(i).getLast_name());
-                personal.setCargo(response.get(i).getPosition());
                 personal.setFoto(response.get(i).getDns_photo() + "/" + response.get(i).getDir_photo() + response.get(i).getId_photo());
-                personal.setCorreo(response.get(i).getEmail());
-                personal.setUnidad(response.get(i).getFaculty());
                 personal.setTelefono("2760010");
+
+                //Cedula
+                if (response.get(i).getIdentification().equals("")) {
+                    personal.setCedula(null);
+                } else {
+                    personal.setCedula(response.get(i).getIdentification());
+                }
+
+                //Nombre
+                if (response.get(i).getName().equals("") || response.get(i).getLast_name().equals("")) {
+                    if (response.get(i).getName().equals("")) {
+                        personal.setNombre(null);
+                    } else {
+                        personal.setNombre(response.get(i).getName());
+                    }
+                } else {
+                    personal.setNombre(response.get(i).getName() + " " + response.get(i).getLast_name());
+                }
+
+                //Cargo
+                if (response.get(i).getPosition().equals("")) {
+                    personal.setCargo(null);
+                } else {
+                    personal.setCargo(response.get(i).getPosition());
+                }
+
+                //Extension
                 if (response.get(i).getExtension().equals("")) {
                     personal.setExtension(0);
                 } else {
                     personal.setExtension(Integer.parseInt(response.get(i).getExtension()));
                 }
+
+                //Correo
+                if (response.get(i).getEmail().equals("")) {
+                    personal.setCorreo(null);
+                } else {
+                    personal.setCorreo(response.get(i).getEmail());
+                }
+
+                //Unidad
+                if (response.get(i).getDep_code().equals("")) {
+                    personal.setUnidad(null);
+                } else {
+                    personal.setUnidad(response.get(i).getDep_code());
+                }
+
                 personal.setId_jerar(0);
-                personal.setUnidad(response.get(i).getDep_code());
                 personal.setOriginal("ORIGINAL");
 
                 personalMDW.add(personal);
@@ -185,10 +222,10 @@ public class MiddlewareJob {
                         existsInBD = true;
 
                         //Actualiza Cargo, Extension, Foto, Correo
-                        if (!personaMDW.getCargo().equals(personaBD.getCargo()) ||
-                                !personaMDW.getExtension().equals(personaBD.getExtension()) ||
-                                !personaMDW.getFoto().equals(personaBD.getFoto()) ||
-                                !personaMDW.getCorreo().equals(personaBD.getCorreo())
+                        if ((!Objects.equals(personaMDW.getCargo(), personaBD.getCargo())) ||
+                                (!Objects.equals(personaMDW.getExtension(), personaBD.getExtension())) ||
+                                (!Objects.equals(personaMDW.getFoto(), personaBD.getFoto())) ||
+                                (!Objects.equals(personaMDW.getCorreo(), personaBD.getCorreo()))
                         ) {
                             iPersonalRepository.updateMDWChangingValues(personaMDW.getCargo(),
                                     personaMDW.getExtension(),
