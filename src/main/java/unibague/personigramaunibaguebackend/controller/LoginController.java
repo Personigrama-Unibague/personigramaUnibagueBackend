@@ -1,13 +1,18 @@
 package unibague.personigramaunibaguebackend.controller;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import unibague.personigramaunibaguebackend.services.LoginService;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 //Controlador que contiene los metodos para administrar la seccion de usuarios
 
@@ -39,23 +44,39 @@ public class LoginController {
     }
 
     /**
-     * Controlador para el loggeo para la seccion de administracion
+     * Metodo para autenticarse en la aplicacion con JWT
      *
-     * @param user     usuario
-     * @param password contraseña
-     * @return True or False
-     * @throws Exception false
+     * @param credentials
+     * @return ResponseEntity con Jwt o Error
      */
-    @GetMapping("/loginAuthentication/{user}/{password}")
-    public ResponseEntity<Boolean> getLoginAuthentication(@PathVariable String user, @PathVariable String password) throws Exception {
+    @PostMapping("/loginAuthentication")
+    public ResponseEntity<String> loginAuthentication(@RequestBody Map<String, String> credentials) {
+        String user = credentials.get("user");
+        String password = credentials.get("password");
 
         Boolean response = loginService.getLoginAuthenticationService(user, password);
 
         if (response) {
-            return ResponseEntity.ok(true);
+            String jwt = generateJWT(user);
+            return ResponseEntity.ok(jwt);
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario o contraseña incorrectos");
         }
+    }
+
+    /**
+     * Metodo para Generar el JWT
+     *
+     * @param username
+     * @return Codigo JWT
+     */
+    private String generateJWT(String username) {
+        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+        String jwt = Jwts.builder()
+                .setSubject(username)
+                .signWith(key)
+                .compact();
+        return jwt;
     }
 
     /**
