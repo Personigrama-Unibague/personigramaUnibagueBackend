@@ -2,6 +2,7 @@ package unibague.personigramaunibaguebackend.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import unibague.personigramaunibaguebackend.model.Roles;
 import unibague.personigramaunibaguebackend.repository.IPersonalRepository;
 import unibague.personigramaunibaguebackend.repository.IRolesRepository;
@@ -25,8 +26,8 @@ public class RolesService {
     /**
      * Controlador para guardar roles
      *
-     * @param nombre   Nombre del rol
-     * @param unidad   Unidad a la que va a pertenecer el rol
+     * @param nombre Nombre del rol
+     * @param unidad Unidad a la que va a pertenecer el rol
      */
     public void getSaveRol(String nombre, String unidad) {
         try {
@@ -88,10 +89,14 @@ public class RolesService {
      * @param nuevo   nuevo id_jerar del rol
      * @param unidad  unidad del rol
      */
+    @Transactional
     public void getUpdateIdJerarRol(Integer antiguo, Integer nuevo, String unidad) {
         try {
+            // Primero, actualizamos los roles para reflejar el nuevo orden.
             iRolesRepository.updateIdJerarRol(antiguo, nuevo, unidad);
-            iPersonalRepository.updateIdJerarNewUpdatedRol(antiguo, nuevo, unidad);
+
+            // Luego, actualizamos las personas para asociarlas correctamente con los roles reorganizados.
+            iRolesRepository.updatePersonasWithNewOrder(antiguo, nuevo, unidad);
         } catch (Exception e) {
             e.printStackTrace();
         }

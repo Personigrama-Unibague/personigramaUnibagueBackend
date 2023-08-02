@@ -3,6 +3,7 @@ package unibague.personigramaunibaguebackend.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import unibague.personigramaunibaguebackend.model.Roles;
@@ -94,6 +95,33 @@ public interface IRolesRepository extends JpaRepository<Roles, Long> {
             "  AND ((?2 < ?1 AND id_jerar >= ?2 AND id_jerar <= ?1) " +
             "       OR (?2 > ?1 AND id_jerar >= ?1 AND id_jerar <= ?2))", nativeQuery = true)
     void updateIdJerarRol(Integer antiguo_id_jerar, Integer nuevo_id_jerar, String unidad);
+
+    /**
+     * Query para cambiar el id_jerar de una persona y actualizar el resto
+     *
+     * @param antiguo_id_jerar antiguo id_jerar del rol
+     * @param nuevo_id_jerar   nuevo id_jerar del rol
+     * @param unidad           unidad del rol
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE personal " +
+            "SET id_jerar = updated_roles.new_id_jerar " +
+            "FROM ( " +
+            "  SELECT id, " +
+            "         CASE " +
+            "           WHEN id_jerar = ?1 THEN ?2 " +
+            "           WHEN ?2 < ?1 AND id_jerar >= ?2 AND id_jerar <= ?1 THEN id_jerar + 1 " +
+            "           WHEN ?2 > ?1 AND id_jerar >= ?1 AND id_jerar <= ?2 THEN id_jerar - 1 " +
+            "           ELSE id_jerar " +
+            "         END AS new_id_jerar " +
+            "  FROM personal " +
+            "  WHERE unidad = ?3 " +
+            "    AND ((?2 < ?1 AND id_jerar >= ?2 AND id_jerar <= ?1) " +
+            "         OR (?2 > ?1 AND id_jerar >= ?1 AND id_jerar <= ?2)) " +
+            ") AS updated_roles " +
+            "WHERE personal.id = updated_roles.id", nativeQuery = true)
+    void updatePersonasWithNewOrder(Integer antiguo_id_jerar, Integer nuevo_id_jerar, String unidad);
 
 
     /**
