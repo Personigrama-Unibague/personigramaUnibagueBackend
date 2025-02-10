@@ -73,7 +73,7 @@ jobs:
               echo "Stash removed";
             fi'      
 
-      - name: Build and Deploy Backend on Remote Server
+      - name: Build and Deploy Backend
         run: |
           sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
             cd /var/personigrama/personigramaUnibagueBackend;
