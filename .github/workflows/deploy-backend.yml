@@ -1,4 +1,4 @@
-name: Deploy Backend EDA
+name: Deploy Backend Personigrama
 
 on:
   push:
