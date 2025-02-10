@@ -1,0 +1,50 @@
+name: Deploy Backend (Spring Boot)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install OpenConnect (if VPN is required)
+        run: sudo apt-get install -y openconnect
+
+      - name: Connect to VPN (if required)
+        run: |
+          echo "${{ secrets.VPN_PASSWORD }}" | sudo openconnect \
+            --protocol=gp \
+            --user="${{ secrets.VPN_USER }}" \
+            --passwd-on-stdin \
+            ${{ secrets.VPN_HOST }} -b
+        env:
+          VPN_USER: ${{ secrets.VPN_USER }}
+          VPN_PASSWORD: ${{ secrets.VPN_PASSWORD }}
+          VPN_HOST: ${{ secrets.VPN_HOST }}
+
+      - name: Install JDK
+        run: sudo apt-get install -y openjdk-21-jdk
+
+      - name: Build the Spring Boot Application
+        run: |
+          ./mvnw clean package -DskipTests
+
+      - name: Deploy Backend to Server
+        run: |
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            cd /var/personigrama/personigramaUnibagueBackend || exit;
+            git pull;
+            mvn clean package -DskipTests;
+            sudo systemctl restart backend.service"
+
+      - name: Restart Backend Service
+        run: |
+          sshpass -p "${{ secrets.SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            sudo systemctl restart backend.service"
