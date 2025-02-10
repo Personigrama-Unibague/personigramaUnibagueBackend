@@ -36,7 +36,7 @@ jobs:
           VPN_USER: ${{ secrets.VPN_USER }}
           VPN_HOST: ${{ secrets.VPN_HOST }}
 
-      - name: Verify VPN connection
+      - name: Verify VPN
         run: ip a
 
       - name: List network routes
