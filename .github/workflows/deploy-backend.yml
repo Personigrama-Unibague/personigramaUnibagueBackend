@@ -36,7 +36,7 @@ jobs:
           VPN_USER: ${{ secrets.VPN_USER }}
           VPN_HOST: ${{ secrets.VPN_HOST }}
 
-      - name: Verify VPN
+      - name: Verify VPN connection
         run: ip a
 
       - name: List network routes
@@ -78,17 +78,25 @@ jobs:
           sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
             cd /var/personigrama/personigramaUnibagueBackend;
           
+            # Set execution permission for mvnw
+            chmod +x ./mvnw;
+          
             # Build the Spring Boot application
             ./mvnw clean package -DskipTests;
           
-            # Stop existing Spring Boot service
-            sudo systemctl stop backend-personigrama;
+            # Stop existing Spring Boot service using sudo with password input
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl stop backend-personigrama;
           
-            # Replace the old JAR with the new one
-            sudo mv target/*.jar /var/personigrama/personigramaUnibagueBackend/backend.jar;
+            # Ensure the JAR file exists before replacing it
+            if [ -f target/*.jar ]; then
+              echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S mv target/*.jar /var/personigrama/personigramaUnibagueBackend/backend.jar;
+            else
+              echo "Error: JAR file not found. Build may have failed.";
+              exit 1;
+            fi
           
             # Start the backend service
-            sudo systemctl start backend-personigrama;
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl start backend-personigrama;
           
             # Check service status
-            sudo systemctl status backend-personigrama --no-pager;'
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl status backend-personigrama --no-pager;'
