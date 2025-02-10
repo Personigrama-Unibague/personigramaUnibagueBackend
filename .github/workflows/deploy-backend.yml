@@ -77,16 +77,16 @@ jobs:
         run: |
           sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
             cd /var/personigrama/personigramaUnibagueBackend;
-          
+
             # Set execution permission for mvnw
             chmod +x ./mvnw;
-          
+
             # Build the Spring Boot application
             ./mvnw clean package -DskipTests;
-          
-            # Stop existing Spring Boot service using sudo with password input
-            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl stop backend-personigrama;
-          
+
+            # Stop existing Spring Boot service if it exists
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl stop backend-personigrama || echo "Service not running, skipping stop.";
+
             # Ensure the JAR file exists before replacing it
             if [ -f target/*.jar ]; then
               echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S mv target/*.jar /var/personigrama/personigramaUnibagueBackend/backend.jar;
@@ -94,9 +94,12 @@ jobs:
               echo "Error: JAR file not found. Build may have failed.";
               exit 1;
             fi
-          
-            # Start the backend service
-            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl start backend-personigrama;
-          
+
+            # Reload services
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl daemon-reload;
+
+            # Start backend service
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl start backend-personigrama || echo "Service not found, check systemd configuration.";
+
             # Check service status
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl status backend-personigrama --no-pager;'
