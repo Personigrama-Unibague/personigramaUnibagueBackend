@@ -168,11 +168,8 @@ public class MiddlewareJob {
                 }
 
                 //Extension
-                if (response.get(i).getExtension().equals("")) {
-                    personal.setExtension(0);
-                } else {
-                    personal.setExtension(Integer.parseInt(response.get(i).getExtension()));
-                }
+                personal.setExtension(0);
+
 
                 //Correo
                 if (response.get(i).getEmail().equals("")) {
