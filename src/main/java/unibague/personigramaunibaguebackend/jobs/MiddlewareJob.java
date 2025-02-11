@@ -42,7 +42,7 @@ public class MiddlewareJob {
     /**
      * Metodo para validar y descargar las unidades, los roles y las personas relacionadas a la misma
      */
-    @Scheduled(fixedRate = 2000000)
+    @Scheduled(fixedRate = 60000)
     public void updateDependenciesMDW() {
 
         try {
@@ -123,7 +123,7 @@ public class MiddlewareJob {
     /**
      * Metodo para validar y descargar las personas
      */
-    @Scheduled(fixedRate = 2000000)
+    @Scheduled(fixedRate = 60000)
     public void updateFunctionariesMDW() {
         try {
             String urlPerMDW = "http://integra.unibague.edu.co/functionariesChart/functionaries?api_token=";
