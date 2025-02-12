@@ -14,12 +14,10 @@ import unibague.personigramaunibaguebackend.repository.IRolesRepository;
 import unibague.personigramaunibaguebackend.repository.IUnidadesRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
- * Job encargado de obtener la informacion del Middleware y realizar procesos de validacion contra la bd interna
+ * Job encargado de obtener la información del Middleware y realizar procesos de validación contra la BD interna.
  */
 @Component
 @EnableScheduling
@@ -40,80 +38,74 @@ public class MiddlewareJob {
     private String token = "$2y$10$s/5xSDieUMEvYD/gfNqFAeFzvWXt13jhWuugpJzQ9rZQrbGpBYUxi";
 
     /**
-     * Metodo para validar y descargar las unidades, los roles y las personas relacionadas a la misma
+     * Método para validar y descargar las unidades, los roles y las personas relacionadas a la misma.
      */
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedDelay = 300000) // Se ejecuta cada 5 minutos después de terminar
     public void updateDependenciesMDW() {
 
         try {
             String urlUndMDW = "http://integra.unibague.edu.co/functionariesChart/dependencies?api_token=";
             DependenciesMDW[] res = restTemplate.getForObject(urlUndMDW + token, DependenciesMDW[].class);
-            List<DependenciesMDW> response = List.of(res);
-            Integer counterRoles = 0;
-            Integer counterPersonal = 0;
+            List<DependenciesMDW> response = res != null ? List.of(res) : new ArrayList<>();
 
-            //Procesar Data
             List<Unidad> unidadesMDW = new ArrayList<>();
             List<Unidad> unidadesBD = iUnidadesRepository.getAllUnidades();
             List<Unidad> newUnidades = new ArrayList<>();
             List<Unidad> toDelete = new ArrayList<>();
 
-            for (int i = 0; i < response.size(); i++) {
+            for (DependenciesMDW dependency : response) {
                 Unidad unidad = new Unidad();
-                unidad.setId(response.get(i).getDep_code());
-                unidad.setNombre(response.get(i).getDep_name());
-                unidad.setParent_id(response.get(i).getDep_father());
+                unidad.setId(Optional.ofNullable(dependency.getDep_code()).orElse("SIN_ID"));
+                unidad.setNombre(Optional.ofNullable(dependency.getDep_name()).orElse("SIN_NOMBRE"));
+                unidad.setParent_id(Optional.ofNullable(dependency.getDep_father()).orElse("SIN_PARENT"));
 
                 unidadesMDW.add(unidad);
             }
 
-            //Para borrar unidades y sus roles relacionados
+            // Identificar unidades a eliminar
             for (Unidad BD : unidadesBD) {
-                boolean encontrado = false;
-                for (Unidad MDW : unidadesMDW) {
-                    if (BD.getId().equals(MDW.getId())) {
-                        encontrado = true;
-                        break;
-                    }
-                }
-                if (!encontrado) {
+                boolean existeEnMDW = unidadesMDW.stream()
+                        .anyMatch(MDW -> BD.getId().equals(MDW.getId()));
+
+                if (!existeEnMDW) {
                     toDelete.add(BD);
                 }
             }
 
             for (Unidad unidadToDelete : toDelete) {
-                counterPersonal += iPersonalRepository.countPersonalByUnidad(unidadToDelete.getId());
-                counterRoles += iRolesRepository.countRolByUnidad(unidadToDelete.getId());
                 iPersonalRepository.deleteByUnidad(unidadToDelete.getId());
-                iUnidadesRepository.deleteUnidadById(unidadToDelete.getId());
                 iRolesRepository.deleteRolByUnidad(unidadToDelete.getId());
+                iUnidadesRepository.deleteUnidadById(unidadToDelete.getId());
             }
 
-            //Para Agregar Unidades
+            // Identificar unidades a agregar o actualizar
             for (Unidad MDW : unidadesMDW) {
-                boolean encontrado = false;
-                for (Unidad BD : unidadesBD) {
-                    if (BD.getId().equals(MDW.getId())) {
-                        encontrado = true;
-                        if (!BD.getNombre().equals(MDW.getNombre()) || !BD.getParent_id().equals(MDW.getParent_id())) {
-                            iUnidadesRepository.updateUnidadesMDW(MDW.getId(), MDW.getNombre(), MDW.getParent_id());
-                            System.out.println("Unidad " + MDW.getNombre() + " Actualizada");
-                        }
-                        break;
+                Optional<Unidad> unidadBDOpt = unidadesBD.stream()
+                        .filter(BD -> BD.getId().equals(MDW.getId()))
+                        .findFirst();
+
+                if (unidadBDOpt.isPresent()) {
+                    Unidad BD = unidadBDOpt.get();
+
+                    if (!Objects.equals(BD.getNombre(), MDW.getNombre()) ||
+                            !Objects.equals(BD.getParent_id(), MDW.getParent_id())) {
+
+                        iUnidadesRepository.updateUnidadesMDW(MDW.getId(), MDW.getNombre(), MDW.getParent_id());
+                        System.out.println("Unidad " + MDW.getNombre() + " Actualizada");
                     }
-                }
-                if (!encontrado) {
+                } else {
                     newUnidades.add(MDW);
                 }
             }
-            iUnidadesRepository.saveAll(newUnidades);
+
+            if (!newUnidades.isEmpty()) {
+                iUnidadesRepository.saveAll(newUnidades);
+            }
 
             System.out.println("---------------------------------------------");
             System.out.println("Fecha: " + LocalDateTime.now());
             System.out.println("Unidades Agregadas: " + newUnidades.size());
-            System.out.println("Unidades Borradas: " + toDelete.size());
-            System.out.println("Roles Borrados: " + counterRoles);
-            System.out.println("Personas De La Unidad Borradas: " + counterPersonal);
+            System.out.println("Unidades Eliminadas: " + toDelete.size());
             System.out.println("---------------------------------------------");
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -121,128 +113,80 @@ public class MiddlewareJob {
     }
 
     /**
-     * Metodo para validar y descargar las personas
+     * Método para validar y descargar las personas
      */
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedDelay = 300000) // Se ejecuta cada 5 minutos después de terminar
     public void updateFunctionariesMDW() {
         try {
             String urlPerMDW = "http://integra.unibague.edu.co/functionariesChart/functionaries?api_token=";
             FunctionariesMDW[] res = restTemplate.getForObject(urlPerMDW + token, FunctionariesMDW[].class);
-            List<FunctionariesMDW> response = List.of(res);
+            List<FunctionariesMDW> response = res != null ? List.of(res) : new ArrayList<>();
 
-            //Procesar Data
-            List<Personal> personalMDW = new ArrayList<>();
+            // Obtener la información actual de la base de datos
             List<Personal> personalBD = iPersonalRepository.getAllPersonal();
+            List<Personal> personalMDW = new ArrayList<>();
             List<Personal> newPersonal = new ArrayList<>();
             List<Personal> toDelete = new ArrayList<>();
 
-            for (int i = 0; i < response.size(); i++) {
-
+            // Procesar datos del Middleware
+            for (FunctionariesMDW functionary : response) {
                 Personal personal = new Personal();
-                personal.setFoto(response.get(i).getDns_photo() + "/" + response.get(i).getDir_photo() + response.get(i).getId_photo());
-                personal.setTelefono("2760010");
 
-                //Cedula
-                if (response.get(i).getIdentification().equals("")) {
-                    personal.setCedula(null);
-                } else {
-                    personal.setCedula(response.get(i).getIdentification());
-                }
-
-                //Nombre
-                if (response.get(i).getName().equals("") || response.get(i).getLast_name().equals("")) {
-                    if (response.get(i).getName().equals("")) {
-                        personal.setNombre(null);
-                    } else {
-                        personal.setNombre(response.get(i).getName());
-                    }
-                } else {
-                    personal.setNombre(response.get(i).getName() + " " + response.get(i).getLast_name());
-                }
-
-                //Cargo
-                if (response.get(i).getPosition().equals("")) {
-                    personal.setCargo(null);
-                } else {
-                    personal.setCargo(response.get(i).getPosition());
-                }
-
-                //Extension
-                personal.setExtension(0);
-
-
-                //Correo
-                if (response.get(i).getEmail().equals("")) {
-                    personal.setCorreo(null);
-                } else {
-                    personal.setCorreo(response.get(i).getEmail());
-                }
-
-                //Unidad
-                if (response.get(i).getDep_code().equals("")) {
-                    personal.setUnidad(null);
-                } else {
-                    personal.setUnidad(response.get(i).getDep_code());
-                }
-
+                // Convertir valores para evitar nulls
+                personal.setCedula(Optional.ofNullable(functionary.getIdentification()).orElse("SIN_CEDULA"));
+                personal.setNombre(Optional.ofNullable(functionary.getName()).orElse("") + " " +
+                        Optional.ofNullable(functionary.getLast_name()).orElse(""));
+                personal.setCargo(Optional.ofNullable(functionary.getPosition()).orElse("SIN_CARGO"));
+                personal.setExtension(parseExtension(functionary.getExtension())); // CAMBIO: Validación de número
+                personal.setCorreo(Optional.ofNullable(functionary.getEmail()).orElse("SIN_CORREO"));
+                personal.setUnidad(Optional.ofNullable(functionary.getDep_code()).orElse("SIN_UNIDAD"));
+                personal.setFoto(functionary.getDns_photo() + "/" + functionary.getDir_photo() + functionary.getId_photo());
+                personal.setTelefono("6082795225");
                 personal.setId_jerar(0);
                 personal.setOriginal("ORIGINAL");
 
                 personalMDW.add(personal);
             }
 
-            //Para borrar personas
+            // Encontrar personas que deben eliminarse
             for (Personal personaBD : personalBD) {
-                boolean encontrado = false;
-                for (Personal personaMDW : personalMDW) {
-                    if (personaBD.getCedula().equals(personaMDW.getCedula())) {
-                        encontrado = true;
-                        break;
-                    }
-                }
+                boolean encontrado = personalMDW.stream().anyMatch(personaMDW ->
+                        personaMDW.getCedula() != null && personaMDW.getCedula().equals(personaBD.getCedula()));
+
                 if (!encontrado) {
                     toDelete.add(personaBD);
                 }
             }
 
+            // Eliminar personas que ya no existen en el Middleware
             for (Personal personToDelete : toDelete) {
                 iPersonalRepository.deleteByCedula(personToDelete.getCedula());
             }
 
-            //Agregar o actualizar personas
+            // Verificar qué personas deben actualizarse o agregarse
             for (Personal personaMDW : personalMDW) {
-                boolean existsInBD = false;
+                Optional<Personal> personaBDOpt = personalBD.stream()
+                        .filter(p -> p.getCedula().equals(personaMDW.getCedula()))
+                        .findFirst();
 
-                for (Personal personaBD : personalBD) {
+                if (personaBDOpt.isPresent()) {
+                    Personal personaBD = personaBDOpt.get();
+                    if (!Objects.equals(personaMDW.getCargo(), personaBD.getCargo()) ||
+                            !Objects.equals(personaMDW.getExtension(), personaBD.getExtension()) ||
+                            !Objects.equals(personaMDW.getFoto(), personaBD.getFoto()) ||
+                            !Objects.equals(personaMDW.getCorreo(), personaBD.getCorreo())) {
 
-                    if (personaMDW.getCedula().equals(personaBD.getCedula())) {
-                        existsInBD = true;
+                        iPersonalRepository.updateMDWChangingValues(
+                                personaMDW.getCargo(),
+                                personaMDW.getExtension(),
+                                personaMDW.getFoto(),
+                                personaMDW.getCorreo(),
+                                personaBD.getCedula()
+                        );
 
-                        //Actualiza Cargo, Extension, Foto, Correo
-                        if ((!Objects.equals(personaMDW.getCargo(), personaBD.getCargo())) ||
-                                (!Objects.equals(personaMDW.getExtension(), personaBD.getExtension())) ||
-                                (!Objects.equals(personaMDW.getFoto(), personaBD.getFoto())) ||
-                                (!Objects.equals(personaMDW.getCorreo(), personaBD.getCorreo()))
-                        ) {
-                            iPersonalRepository.updateMDWChangingValues(personaMDW.getCargo(),
-                                    personaMDW.getExtension(),
-                                    personaMDW.getFoto(),
-                                    personaMDW.getCorreo(),
-                                    personaBD.getCedula());
-                            System.out.println("Persona " + personaMDW.getNombre() + " Actualizada");
-                        }
-
-                        //Actualiza la unidad de los originales
-                        if (personaBD.getOriginal().equals("ORIGINAL")) {
-                            if (!personaMDW.getUnidad().equals(personaBD.getUnidad())) {
-                                iPersonalRepository.updateOriginalUnidadMDW(personaMDW.getUnidad(), personaBD.getCedula());
-                            }
-                        }
-
+                        System.out.println("Persona actualizada: " + personaMDW.getNombre());
                     }
-                }
-
-                if (!existsInBD) {
+                } else {
                     newPersonal.add(personaMDW);
                 }
             }
@@ -252,10 +196,19 @@ public class MiddlewareJob {
             System.out.println("---------------------------------------------");
             System.out.println("Fecha: " + LocalDateTime.now());
             System.out.println("Personas Agregadas: " + newPersonal.size());
-            System.out.println("Personas Borradas: " + toDelete.size());
+            System.out.println("Personas Eliminadas: " + toDelete.size());
             System.out.println("---------------------------------------------");
+
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+
+    private Integer parseExtension(String extension) {
+        try {
+            return Integer.parseInt(extension.trim());
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
 }
