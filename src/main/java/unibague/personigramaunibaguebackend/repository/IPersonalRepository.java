@@ -10,7 +10,7 @@ import unibague.personigramaunibaguebackend.model.Unidad;
 
 import java.util.List;
 
-//Interfaz que implementa JpaRepository y metodos query personalizados
+// Interfaz que implementa JpaRepository y métodos query personalizados
 
 @Repository
 public interface IPersonalRepository extends JpaRepository<Personal, Long> {
@@ -20,7 +20,7 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
      *
      * @return Lista de personas
      */
-    @Query(value = "select * from personal", nativeQuery = true)
+    @Query(value = "SELECT * FROM personal", nativeQuery = true)
     List<Personal> getAllPersonal();
 
     /**
@@ -29,17 +29,10 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
      * @param unidad unidad
      * @return Lista de personas
      */
-    @Query(value = "select * \n" +
-            "from(\n" +
-            "\tSELECT DISTINCT on (cedula) *\n" +
-            "\tFROM personal\n" +
-            "\tWHERE cedula NOT IN (\n" +
-            "\t    SELECT cedula\n" +
-            "\t    FROM personal\n" +
-            "\t    WHERE unidad = :unidad\n" +
-            ") \n" +
-            ")as consulta\n" +
-            "order by nombre asc;", nativeQuery = true)
+    @Query(value = "SELECT * FROM ("
+            + "SELECT DISTINCT ON (cedula) * FROM personal "
+            + "WHERE cedula NOT IN (SELECT cedula FROM personal WHERE unidad = :unidad)) AS consulta "
+            + "ORDER BY nombre ASC", nativeQuery = true)
     List<Personal> getAllDistinct(String unidad);
 
     /**
@@ -48,160 +41,139 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
      * @param und unidad
      * @return Lista de personas
      */
-    @Query(value = "select * from personal where unidad = :und", nativeQuery = true)
+    @Query(value = "SELECT * FROM personal WHERE unidad = :und", nativeQuery = true)
     List<Personal> findByUnidad(String und);
 
     /**
-     * Query para encontrar personas por cedula
+     * Query para encontrar personas por cédula
      *
-     * @param id cedula
+     * @param id cédula
      * @return Persona
      */
-    @Query(value = "select * from personal where cedula=:id limit 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM personal WHERE cedula = :id LIMIT 1", nativeQuery = true)
     Personal findByCedula(String id);
 
     /**
-     * Query para validar si la personas existe por cedula
+     * Query para validar si la persona existe por cédula
      *
-     * @param id cedula de la persona
-     * @return true or false
+     * @param id cédula de la persona
+     * @return true o false
      */
-    @Query(value = "select (COUNT(*) > 0) AS existe from personal where cedula = :id", nativeQuery = true)
+    @Query(value = "SELECT (COUNT(*) > 0) AS existe FROM personal WHERE cedula = :id", nativeQuery = true)
     Boolean existByCedula(String id);
 
     /**
-     * Query para eliminar una persona por cedula y unidad
+     * Query para eliminar una persona por cédula y unidad
      *
-     * @param id     id de la persona
+     * @param id     ID de la persona
      * @param unidad unidad a la que pertenece la persona
      */
     @Transactional
     @Modifying
-    @Query(value = "delete from personal where cedula = :id and unidad = :unidad", nativeQuery = true)
+    @Query(value = "DELETE FROM personal WHERE cedula = :id AND unidad = :unidad", nativeQuery = true)
     void deleteByCedulaAndUnidad(String id, String unidad);
 
     /**
-     * Query para eliminar una persona por cedula
+     * Query para eliminar una persona por cédula
      *
-     * @param cedula cedula de la persona
+     * @param cedula cédula de la persona
      */
     @Transactional
     @Modifying
-    @Query(value = "delete from personal where cedula = :cedula", nativeQuery = true)
+    @Query(value = "DELETE FROM personal WHERE cedula = :cedula", nativeQuery = true)
     void deleteByCedula(String cedula);
 
     /**
      * Query para eliminar una persona por unidad
      *
-     * @param unidad
+     * @param unidad Unidad a la que pertenece la persona
      */
     @Transactional
     @Modifying
-    @Query(value = "DELETE FROM personal WHERE unidad=:unidad", nativeQuery = true)
+    @Query(value = "DELETE FROM personal WHERE unidad = :unidad", nativeQuery = true)
     void deleteByUnidad(String unidad);
 
-
     /**
-     * Metodo para contar personas por unidad
+     * Query para contar personas por unidad
      *
      * @param unidad Unidad a la que pertenece la persona
-     * @return Numero de personas en la unidad
+     * @return Número de personas en la unidad
      */
-    @Query(value = "select count(*) from personal where unidad = :unidad", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM personal WHERE unidad = :unidad", nativeQuery = true)
     Integer countPersonalByUnidad(String unidad);
 
     /**
-     * Query para guardar persona
-     *
-     * @param cedula    cedula de la persona
-     * @param cargo     cargo de la persona
-     * @param correo    correo de la persona
-     * @param extension extension de la persona
-     * @param foto      foto de la persona
-     * @param nombre    nombre de la persona
-     * @param telefono  telefono de la persona
-     * @param unidad    unidad de la persona
+     * Query para guardar una persona
      */
     @Transactional
     @Modifying
-    @Query(value = "INSERT INTO personal\n" +
-            "(nombre, cargo, cedula, correo, \"extension\", foto, telefono, unidad, id_jerar)\n" +
-            "VALUES(:nombre, :cargo, :cedula, :correo, :extension, :foto, :telefono, :unidad, 0);", nativeQuery = true)
+    @Query(value = "INSERT INTO personal (nombre, cargo, cedula, correo, extension, foto, telefono, unidad, id_jerar) "
+            + "VALUES (:nombre, :cargo, :cedula, :correo, :extension, :foto, :telefono, :unidad, 0)", nativeQuery = true)
     void savePerson(String cedula, String cargo, String correo, Integer extension, String foto, String nombre, String telefono, String unidad);
 
     /**
-     * Query para actualizar el id_jerarquico de la persona por cedula y unidad
-     *
-     * @param id_jerar nuevo id_jerar
-     * @param cedula   cedula de la persona
-     * @param unidad   unidad de la persona
+     * Query para actualizar el id_jerarquico de la persona por cédula y unidad
      */
     @Transactional
     @Modifying
-    @Query(value = "update personal set id_jerar=:id_jerar where cedula=:cedula and unidad=:unidad", nativeQuery = true)
+    @Query(value = "UPDATE personal SET id_jerar = :id_jerar WHERE cedula = :cedula AND unidad = :unidad", nativeQuery = true)
     void updateIdJerarByCedulaUnd(Integer id_jerar, String cedula, String unidad);
 
     /**
      * Query para actualizar el id_jerarquico a default
-     *
-     * @param cedula cedula de la persona
-     * @param unidad unidad a la que pertenece
      */
     @Transactional
     @Modifying
-    @Query(value = "update personal set id_jerar=0 where cedula=:cedula and unidad=:unidad", nativeQuery = true)
+    @Query(value = "UPDATE personal SET id_jerar = 0 WHERE cedula = :cedula AND unidad = :unidad", nativeQuery = true)
     void updateIdJerarDefault(String cedula, String unidad);
 
     /**
-     * Query para actualizar masivamente a todas las personas de la unidad el Id_jerar a default
-     *
-     * @param unidad   unidad a modificar
-     * @param id_jerar id_jerar a modificar
+     * Query para actualizar todas las personas de la unidad el Id_jerar a default
      */
     @Transactional
     @Modifying
-    @Query(value = "update personal set id_jerar=0 where unidad=:unidad and id_jerar=:id_jerar", nativeQuery = true)
+    @Query(value = "UPDATE personal SET id_jerar = 0 WHERE unidad = :unidad AND id_jerar = :id_jerar", nativeQuery = true)
     void updateIdJerarDefaultAllSection(String unidad, Integer id_jerar);
 
     /**
-     * Query para actualizar masivamente a todas las personas de la unidad el Id_jerar a default
-     *
-     * @param unidad       unidad a modificar
-     * @param old_id_jerar viejo id_jerar a modificar
-     * @param new_id_jerar nuevo id_jerar a modificar
+     * Query para actualizar masivamente el Id_jerar de todas las personas de la unidad
      */
     @Transactional
     @Modifying
-    @Query(value = "update personal set id_jerar=:new_id_jerar where unidad=:unidad and id_jerar=:old_id_jerar", nativeQuery = true)
+    @Query(value = "UPDATE personal SET id_jerar = :new_id_jerar WHERE unidad = :unidad AND id_jerar = :old_id_jerar", nativeQuery = true)
     void updateIdJerarNewUpdatedRol(Integer old_id_jerar, Integer new_id_jerar, String unidad);
 
-    @Transactional
-    @Modifying
-    @Query(value = "update personal set \n" +
-            "cargo=:cargo,\n" +
-            "extension=:extension,\n" +
-            "foto=:foto,\n" +
-            "correo=:correo\n" +
-            "unidad=:unidad\n" +
-            "where cedula=:cedula ", nativeQuery = true)
-    void updateMDWChangingValues(String cargo, Integer extension, String foto, String correo, String unidad , String cedula);
-
-    @Transactional
-    @Modifying
-    @Query(value = "update personal set unidad=:unidad where cedula=:cedula and original='ORIGINAL'", nativeQuery = true)
-    void updateOriginalUnidadMDW(String unidad, String cedula);
-
-
-    //----------------------------------------------------------------------------------------------------------
-
     /**
-     * Query para pasar informacion de Json a Base De Datos
+     * Query para actualizar cargo, extensión, foto, correo y teléfono de una persona por cédula
      */
     @Transactional
     @Modifying
-    @Query(value = "INSERT INTO public.personal\n" +
-            "(cedula, cargo, correo, \"extension\", foto, id_jerar, nombre, telefono, unidad_id)\n" +
-            "VALUES(:cedula, :cargo, :correo, :extension, :foto, 0, :nombre, :telefono, :und );", nativeQuery = true)
-    void guardarJson(String cedula, String cargo, String correo, Integer extension, String foto, String nombre, String telefono, Unidad und);
+    @Query(value = "UPDATE personal SET "
+            + "cargo = :cargo, "
+            + "extension = :extension, "
+            + "foto = :foto, "
+            + "correo = :correo, "
+            + "telefono = :telefono "
+            + "WHERE cedula = :cedula", nativeQuery = true)
+    void updateMDWChangingValues(String cargo, Integer extension, String foto, String correo, String telefono, String cedula);
 
+    /**
+     * Query para actualizar la unidad de una persona si es "ORIGINAL"
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE personal SET unidad = :unidad, telefono = :telefono WHERE cedula = :cedula AND original = 'ORIGINAL'", nativeQuery = true)
+    void updateOriginalUnidadMDW(String unidad, String telefono, String cedula);
+    
+
+    /**
+     * Query para insertar información de JSON a la base de datos
+     */
+    @Transactional
+    @Modifying
+    @Query(value = "INSERT INTO personal (cedula, cargo, correo, extension, foto, id_jerar, nombre, telefono, unidad) "
+            + "VALUES (:cedula, :cargo, :correo, :extension, :foto, 0, :nombre, :telefono, :unidad)", nativeQuery = true)
+    void guardarJson(String cedula, String cargo, String correo, Integer extension, String foto, String nombre, String telefono, String unidad);
 }
+
+
