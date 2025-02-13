@@ -174,13 +174,15 @@ public class MiddlewareJob {
                     if (!Objects.equals(personaMDW.getCargo(), personaBD.getCargo()) ||
                             !Objects.equals(personaMDW.getExtension(), personaBD.getExtension()) ||
                             !Objects.equals(personaMDW.getFoto(), personaBD.getFoto()) ||
-                            !Objects.equals(personaMDW.getCorreo(), personaBD.getCorreo())) {
+                            !Objects.equals(personaMDW.getCorreo(), personaBD.getCorreo()) ||
+                            !Objects.equals(personaMDW.getUnidad(), personaBD.getUnidad())) {
 
                         iPersonalRepository.updateMDWChangingValues(
                                 personaMDW.getCargo(),
                                 personaMDW.getExtension(),
                                 personaMDW.getFoto(),
                                 personaMDW.getCorreo(),
+                                personaMDW.getUnidad(),
                                 personaBD.getCedula()
                         );
 

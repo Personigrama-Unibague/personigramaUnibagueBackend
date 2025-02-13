@@ -182,8 +182,9 @@ public interface IPersonalRepository extends JpaRepository<Personal, Long> {
             "extension=:extension,\n" +
             "foto=:foto,\n" +
             "correo=:correo\n" +
+            "unidad=:unidad\n" +
             "where cedula=:cedula ", nativeQuery = true)
-    void updateMDWChangingValues(String cargo, Integer extension, String foto, String correo, String cedula);
+    void updateMDWChangingValues(String cargo, Integer extension, String foto, String correo, String unidad , String cedula);
 
     @Transactional
     @Modifying
