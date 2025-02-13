@@ -42,7 +42,7 @@ public class MiddlewareJob {
     /**
      * Método para validar y descargar las unidades, los roles y las personas relacionadas a la misma.
      */
-    @Scheduled(fixedDelay = 300000) // Se ejecuta cada 5 minutos después de terminar
+    @Scheduled(fixedDelay = 3600000) // Se ejecuta cada 5 minutos después de terminar
     public void updateDependenciesMDW() {
 
         try {
@@ -117,7 +117,7 @@ public class MiddlewareJob {
     /**
      * Método para validar y descargar las personas y sus unidades desde el Middleware.
      */
-    @Scheduled(fixedDelay = 300000) // Se ejecuta cada 5 minutos después de terminar
+    @Scheduled(fixedDelay = 3600000) // Se ejecuta cada 5 minutos después de terminar
     public void updateFunctionariesMDW() {
         try {
             String urlPerMDW = "http://integra.unibague.edu.co/functionariesChart/functionaries?api_token=";

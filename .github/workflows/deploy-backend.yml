@@ -14,16 +14,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: 🛠 Checkout repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Ensures a full clone of the repository
 
-      - name: Install OpenConnect
+      - name:  Install OpenConnect (VPN)
         run: sudo apt-get install -y openconnect
 
-      - name: Install sshpass
+      - name:  Install sshpass (for secure SSH login)
         run: sudo apt-get install -y sshpass
 
-      - name: Connect to VPN
+      - name:  Connect to VPN
         run: |
           echo "${{ secrets.VPN_PASSWORD }}" | sudo openconnect \
             --protocol=gp \
@@ -36,25 +38,27 @@ jobs:
           VPN_USER: ${{ secrets.VPN_USER }}
           VPN_HOST: ${{ secrets.VPN_HOST }}
 
-      - name: Verify VPN connection
+      - name:  Verify VPN Connection
         run: ip a
 
-      - name: List network routes
+      - name:  List Network Routes
         run: ip route
 
-      - name: Test internal connectivity with SSH
+      - name:  Test Internal Connectivity via SSH
         run: |
-          sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} 'echo "SSH connection successful"'
+          sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+          ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} 'echo "SSH connection successful"'
 
-      - name: Clone repository on remote server
+      - name:  Clone Repository on Remote Server
         run: |
-          sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
+          sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+          ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
             cd /var/personigrama/personigramaUnibagueBackend || exit;
-          
+
             # Ensure Git recognizes the directory as safe
             git config --global --add safe.directory /var/personigrama/personigramaUnibagueBackend;
-          
-            # Check if there are local changes before stashing
+
+            # Stash any local changes before pulling updates
             if [[ $(git status --porcelain) ]]; then
               git stash;
               echo "Local changes saved with git stash";
@@ -63,31 +67,35 @@ jobs:
               echo "No local changes found";
               STASHED=false;
             fi
-          
-            # Perform git pull with rebase
+
+            # Pull the latest changes
             git pull --rebase;
-          
-            # Remove stash only if one was created
+
+            # Remove stash only if it was created
             if [[ "$STASHED" == "true" ]]; then
               git stash drop;
               echo "Stash removed";
             fi'      
 
-      - name: Build and Deploy Backend
+      - name:  Build and Deploy Backend
         run: |
-          sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
+          sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+          ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
             cd /var/personigrama/personigramaUnibagueBackend;
 
-            # Set execution permission for mvnw
+            # Set execution permission for Maven wrapper
             chmod +x ./mvnw;
 
-            # Build the Spring Boot application
-            ./mvnw clean package -DskipTests;
+            # Clean and install dependencies
+            ./mvnw clean install -DskipTests;
 
-            # Stop existing Spring Boot service if it exists
+            # Package the Spring Boot application into a JAR file
+            ./mvnw package -DskipTests;
+
+            # Stop existing backend service if it is running
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl stop backend-personigrama || echo "Service not running, skipping stop.";
 
-            # Ensure the JAR file exists before replacing it
+            # Move the newly built JAR file to the deployment directory
             if [ -f target/*.jar ]; then
               echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S mv target/*.jar /var/personigrama/personigramaUnibagueBackend/backend.jar;
             else
@@ -95,11 +103,12 @@ jobs:
               exit 1;
             fi
 
-            # Reload services
+            # Reload system services
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl daemon-reload;
 
-            # Start backend service
+            # Restart the backend service
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl start backend-personigrama || echo "Service not found, check systemd configuration.";
 
-            # Check service status
-            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl status backend-personigrama --no-pager;'
+            # Check the status of the backend service
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl status backend-personigrama --no-pager;
+          '
