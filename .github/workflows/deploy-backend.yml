@@ -31,10 +31,6 @@ jobs:
             --passwd-on-stdin \
             ${{ secrets.VPN_HOST }} \
             --servercert pin-sha256:e+mVC0ZMBRpVuuepldqN0mN6RvimRBTzlm5zZbGbcmA= -b
-        env:
-          VPN_PASSWORD: ${{ secrets.VPN_PASSWORD }}
-          VPN_USER: ${{ secrets.VPN_USER }}
-          VPN_HOST: ${{ secrets.VPN_HOST }}
 
       - name: Deploy Backend Application
         run: |
@@ -53,15 +49,19 @@ jobs:
               echo " Killing old backend process: $OLD_PID";
               echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S kill -9 $OLD_PID;
             else
-              echo "✔️ No existing backend process found.";
+              echo " No existing backend process found.";
             fi
 
             echo " Cleaning up old build files..."
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S rm -rf target
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S rm -f personigramaunibaguebackend-0.0.1-SNAPSHOT.jar
 
+            echo " Resetting repository to avoid conflicts..."
+            git reset --hard origin/main
+            git clean -fd
+
             echo " Pulling latest changes from Git..."
-            git pull origin main
+            git pull origin main --rebase
 
             echo " Building new backend..."
             chmod +x ./mvnw
