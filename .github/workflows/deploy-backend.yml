@@ -14,16 +14,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name:  Checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name:  Install OpenConnect (VPN)
+      - name: Install OpenConnect (VPN)
         run: sudo apt-get install -y openconnect
 
-      - name:  Install sshpass (for secure SSH login)
+      - name: Install sshpass (for secure SSH login)
         run: sudo apt-get install -y sshpass
 
-      - name:  Connect to VPN
+      - name: Connect to VPN
         run: |
           echo "${{ secrets.VPN_PASSWORD }}" | sudo openconnect \
             --protocol=gp \
@@ -36,38 +36,45 @@ jobs:
           VPN_USER: ${{ secrets.VPN_USER }}
           VPN_HOST: ${{ secrets.VPN_HOST }}
 
-      - name:  Deploy Backend Application
+      - name: Deploy Backend Application
         run: |
           sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
           ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
+          
+            echo " Connecting to Backend Server..."
             cd /var/personigrama/personigramaUnibagueBackend;
 
-            echo " Stopping existing service..."
+            echo " Stopping the existing backend service..."
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl stop backend-personigrama || echo "Service not running, skipping stop.";
 
-            echo " Killing any running Java process..."
+            echo " Checking for running Java processes..."
             OLD_PID=$(ps aux | grep personigramaunibaguebackend | grep -v grep | awk "{print \$2}")
             if [[ -n "$OLD_PID" ]]; then
-              echo "Killing old backend process: $OLD_PID";
+              echo " Killing old backend process: $OLD_PID";
               echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S kill -9 $OLD_PID;
             else
-              echo "No existing backend process found.";
+              echo "✔️ No existing backend process found.";
             fi
 
-            echo " Deleting old JAR and target directory..."
+            echo " Cleaning up old build files..."
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S rm -rf target
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S rm -f personigramaunibaguebackend-0.0.1-SNAPSHOT.jar
+
+            echo " Pulling latest changes from Git..."
+            git pull origin main
 
             echo " Building new backend..."
             chmod +x ./mvnw
             ./mvnw clean install -DskipTests
             ./mvnw package -DskipTests
 
-            echo " Starting new backend process..."
-            cd target
-            nohup java -jar personigramaunibaguebackend-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
+            echo " Moving new JAR to deployment directory..."
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S mv target/personigramaunibaguebackend-0.0.1-SNAPSHOT.jar /var/personigrama/personigramaUnibagueBackend/backend.jar
 
-            echo "♻️ Restarting systemd service..."
+            echo " Reloading systemd service configuration..."
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl daemon-reload
+
+            echo " Restarting backend service..."
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl restart backend-personigrama
 
             echo " Backend deployment completed successfully!"
