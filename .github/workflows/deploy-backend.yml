@@ -14,18 +14,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🛠 Checkout repository
+      - name:  Checkout repository
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # Ensures a full clone of the repository
 
-      - name: 📥 Install OpenConnect (VPN)
+      - name:  Install OpenConnect (VPN)
         run: sudo apt-get install -y openconnect
 
-      - name: 🔑 Install sshpass (for secure SSH login)
+      - name:  Install sshpass (for secure SSH login)
         run: sudo apt-get install -y sshpass
 
-      - name: 🌐 Connect to VPN
+      - name:  Connect to VPN
         run: |
           echo "${{ secrets.VPN_PASSWORD }}" | sudo openconnect \
             --protocol=gp \
@@ -38,58 +36,16 @@ jobs:
           VPN_USER: ${{ secrets.VPN_USER }}
           VPN_HOST: ${{ secrets.VPN_HOST }}
 
-      - name: 🔍 Verify VPN Connection
-        run: ip a
-
-      - name: 📡 List Network Routes
-        run: ip route
-
-      - name: 🔐 Test Internal Connectivity via SSH
-        run: |
-          sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
-          ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} 'echo "SSH connection successful"'
-
-      - name: 🚀 Clone Repository on Remote Server
-        run: |
-          sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
-          ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
-            cd /var/personigrama/personigramaUnibagueBackend || exit;
-
-            # Ensure Git recognizes the directory as safe
-            git config --global --add safe.directory /var/personigrama/personigramaUnibagueBackend;
-
-            # Stash any local changes before pulling updates
-            if [[ $(git status --porcelain) ]]; then
-              git stash;
-              echo "Local changes saved with git stash";
-              STASHED=true;
-            else
-              echo "No local changes found";
-              STASHED=false;
-            fi
-
-            # Pull the latest changes
-            git pull --rebase;
-
-            # Remove stash only if it was created
-            if [[ "$STASHED" == "true" ]]; then
-              git stash drop;
-              echo "Stash removed";
-            fi'      
-
-      - name: 🔨 Build and Deploy Backend
+      - name:  Deploy Backend Application
         run: |
           sshpass -p "${{ secrets.INTERNAL_SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
           ${{ secrets.INTERNAL_USER }}@${{ secrets.INTERNAL_RESOURCE_IP }} '
             cd /var/personigrama/personigramaUnibagueBackend;
 
-            # Grant proper permissions to avoid permission errors
-            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S chmod -R 777 /var/personigrama/personigramaUnibagueBackend;
-
-            # Stop existing backend service before deleting files
+            echo " Stopping existing service..."
             echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl stop backend-personigrama || echo "Service not running, skipping stop.";
 
-            # Kill any remaining Java processes running the old backend (if necessary)
+            echo " Killing any running Java process..."
             OLD_PID=$(ps aux | grep personigramaunibaguebackend | grep -v grep | awk "{print \$2}")
             if [[ -n "$OLD_PID" ]]; then
               echo "Killing old backend process: $OLD_PID";
@@ -98,31 +54,21 @@ jobs:
               echo "No existing backend process found.";
             fi
 
-            # Forcefully delete the target directory to prevent permission issues
-            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S rm -rf target;
+            echo " Deleting old JAR and target directory..."
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S rm -rf target
 
-            # Set execution permission for Maven wrapper
-            chmod +x ./mvnw;
+            echo " Building new backend..."
+            chmod +x ./mvnw
+            ./mvnw clean install -DskipTests
+            ./mvnw package -DskipTests
 
-            # Clean and install dependencies
-            ./mvnw clean install -DskipTests;
-
-            # Package the Spring Boot application into a JAR file
-            ./mvnw package -DskipTests;
-
-            # Ensure the JAR file is placed in the correct location: target/
-            if [ -f target/personigramaunibaguebackend-0.0.1-SNAPSHOT.jar ]; then
-              echo "JAR file successfully built!";
-            else
-              echo "Error: JAR file not found in target/. Build may have failed.";
-              exit 1;
-            fi
-
-            # Start the backend application from the target directory
-            cd target;
+            echo " Starting new backend process..."
+            cd target
             nohup java -jar personigramaunibaguebackend-0.0.1-SNAPSHOT.jar > /dev/null 2>&1 &
-            echo "Backend started successfully!";
 
-            # Verify that the backend is running
-            ps aux | grep personigramaunibaguebackend | grep -v grep;
+            echo "♻️ Restarting systemd service..."
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl daemon-reload
+            echo "${{ secrets.INTERNAL_SSH_PASSWORD }}" | sudo -S systemctl restart backend-personigrama
+
+            echo " Backend deployment completed successfully!"
           '
