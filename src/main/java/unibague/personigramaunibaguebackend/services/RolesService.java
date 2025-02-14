@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import unibague.personigramaunibaguebackend.model.Roles;
-import unibague.personigramaunibaguebackend.repository.IPersonalRepository;
 import unibague.personigramaunibaguebackend.repository.IRolesRepository;
 
 import java.util.List;
@@ -20,8 +19,6 @@ public class RolesService {
     @Autowired
     private IRolesRepository iRolesRepository;
 
-    @Autowired
-    private IPersonalRepository iPersonalRepository;
 
     /**
      * Controlador para guardar roles
