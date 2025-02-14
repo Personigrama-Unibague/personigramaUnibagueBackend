@@ -2,13 +2,6 @@ server:
   port: '9090'
   servlet:
     context-path: '/personigramaunibagueBackend'
-  ssl:
-    enabled: true
-      #key-alias: 
-    key-store: classpath:unibague2025.p12
-    key-store-type: PKCS12
-    key-password: Unibague
-    key-store-password: Unibague 
 spring:
   jpa:
     database: postgresql
@@ -16,9 +9,9 @@ spring:
       ddl-auto: update
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: 'jdbc:postgresql://172.19.21.11:5432/personigrama'
-    username: uiperson
-    password: P88K5pKrDFP5%ES#/d
+    url: 'jdbc:postgresql://localhost:5432/postgres'
+    username: postgres
+    password: '1234'
     hikari:
       connectionTimeout: '20000'
       maximumPoolSize: '5'

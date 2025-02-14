@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import unibague.personigramaunibaguebackend.model.Personal;
 import unibague.personigramaunibaguebackend.repository.IPersonalRepository;
+import unibague.personigramaunibaguebackend.repository.IUnidadesRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class PersonalService {
      * Repositorio
      */
     @Autowired
+    private IUnidadesRepository iUnidadesRepository;
 
     /**
      * Controlador para traer las personas unicas de tipo distinct por unidad
